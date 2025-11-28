@@ -2,10 +2,23 @@ html,
 body {
   margin: 0;
   font-family: 'Rethink sans', sans-serif;
-  padding: clamp(1.5rem, 5vw, 4rem) clamp(1rem, 5vw, 3rem);
+  padding: clamp(1rem, 1vw, 4rem) 0;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.page-header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 2rem;
+}
+
+.logo-brand img {
+  height: clamp(32px, 6vw, 60px);
+  width: auto;
 }
 
 .landing-radio-group {
