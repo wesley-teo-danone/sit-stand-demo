@@ -1,0 +1,22 @@
+{
+  "name": "ironai-fe-lib",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "live-server --quiet --open=./index.html",
+    "start-https": "live-server --https=./https-config.js --quiet --open=./index.html",
+    "lint": "eslint \"**/*.{js,ts}\"",
+    "lint:fix": "eslint \"**/*.{js,ts}\" --fix"
+  },
+  "dependencies": {
+    "npm": "^11.4.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.28.0",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.1",
+    "live-server": "^1.2.2",
+    "prettier": "^3.6.1"
+  }
+}
