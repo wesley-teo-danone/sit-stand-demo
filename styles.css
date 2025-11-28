@@ -1,0 +1,23 @@
+html,
+body {
+  margin: 0;
+  font-family: 'Rethink sans', sans-serif;
+  padding: clamp(1.5rem, 5vw, 4rem) clamp(1rem, 5vw, 3rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.landing-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+}
+.landing-radio-group .form-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
