@@ -2,7 +2,7 @@ html,
 body {
   margin: 0;
   font-family: 'Rethink sans', sans-serif;
-  padding: clamp(1rem, 1vw, 4rem) 0;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
