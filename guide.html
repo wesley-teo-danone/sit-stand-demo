@@ -13,15 +13,9 @@
     <link href="styles.css" rel="stylesheet">
     <title>Sit2Scan Guide</title>
     <style>
-        body {
-            background: linear-gradient(to bottom right, #b3e5fc, #c8e6c9);
-            min-height: 100vh;
-            font-family: 'Rethink Sans', Arial, sans-serif;
-        }
-
         .guide-header {
             font-size: 3rem;
-            color: #004d40;
+            color: #1b3259;
             font-weight: bold;
             text-align: center;
             margin-bottom: 1rem;
@@ -42,7 +36,8 @@
             display: block;
             margin: 0 auto 2rem auto;
             max-width: 280px;
-            width: 100%;
+            height: clamp(140px, 30vh, 280px);
+            width: auto;
             border-radius: 18px;
             box-shadow: 0 8px 32px rgba(50, 71, 194, 0.10);
             background: #fff;
@@ -53,7 +48,7 @@
         .guide-btn {
             display: block;
             margin: 0 auto 3rem auto;
-            background-color: #26a69a;
+            background-color: #2c79eb;
             color: white;
             border: none;
             padding: 16px 32px;
@@ -64,7 +59,7 @@
         }
 
         .guide-btn:hover {
-            background-color: #008a7a;
+            background-color: #2360bc;
         }
     </style>
 </head>
@@ -77,36 +72,52 @@
     </header>
     <div id="guideStep">
         <div class="guide-header" id="guideHeader">Welcome to Sit2Scan</div>
-        <div class="guide-content" id="guideText">
+        <div class="guide-content" id="topGuideText">
             --
         </div>
         <img class="guide-image" id="guideImage">
-        <button class="guide-btn" id="nextBtn">Next</button>
+        <div class="guide-content" id="bottomGuideText">
+            --
+        </div>
+        <button class="guide-btn" id="nextBtn">Next step</button>
     </div>
     <script>
         // Guide steps data
         const steps = [
             {
-                header: 'Step 1: Prepare Your Space',
-                text: 'Sit on the chair with arms crossed on your chest and your back straight.\n\nKeep your feet flat on the floor',
+                header: 'Step 1',
+                topText: '• Put your phone on a stable table at hip height​.\n• Use the front camera and make sure your whole body is visible in the screen.\n• Use strong chair without armrests or wheels​',
+                bottomText: 'No armless chair? Use a safe chair for sitting and standing',
                 img: './assets/sit_guide.png',
                 imgAlt: 'Prepare Space'
             },
             {
-                header: 'Step 2: Perform the Test',
-                text: 'At "Go!", fully stand up and sit down as many times as you can until the 30-second timer runs off.\n\nDo not use your arms to aid your performance.',
+                header: 'Step 2',
+                topText: '• Sit on the chair​\n• Cross your arms on your chest ​\n• Keep your back straight and feet flat',
+                bottomText: 'This position helps measure your strength accurately',
+                img: './assets/stand_guide.png',
+                imgAlt: 'Perform Test'
+            },
+            {
+                header: 'Step 3',
+                topText: 'At “Go”, stand up and sit down as many times as you can in 30 seconds. Keep arms crossed—don’t use them to help.',
+                bottomText: 'Stop if you feel dizzy or unsafe. This measures your leg strength.',
                 img: './assets/stand_guide.png',
                 imgAlt: 'Perform Test'
             }
         ];
         let currentStep = 0;
         const guideHeader = document.getElementById('guideHeader');
-        const guideText = document.getElementById('guideText');
+        const guideTopText = document.getElementById('topGuideText');
+        const guideBottomText = document.getElementById('bottomGuideText');
         const guideImage = document.getElementById('guideImage');
         const nextBtn = document.getElementById('nextBtn');
         // Initialize first step
         guideHeader.textContent = steps[currentStep].header;
-        guideText.innerHTML = steps[currentStep].text
+        guideTopText.innerHTML = steps[currentStep].topText
+            .replace(/\n/g, "<br>")
+            .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+        guideBottomText.innerHTML = steps[currentStep].bottomText
             .replace(/\n/g, "<br>")
             .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
         guideImage.src = steps[currentStep].img;
@@ -115,13 +126,16 @@
             currentStep++;
             if (currentStep < steps.length) {
                 guideHeader.textContent = steps[currentStep].header;
-                guideText.innerHTML = steps[currentStep].text
+                guideTopText.innerHTML = steps[currentStep].topText
+                    .replace(/\n/g, "<br>")
+                    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+                guideBottomText.innerHTML = steps[currentStep].bottomText
                     .replace(/\n/g, "<br>")
                     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
                 guideImage.src = steps[currentStep].img;
                 guideImage.alt = steps[currentStep].imgAlt;
                 if (currentStep === steps.length - 1) {
-                    nextBtn.textContent = 'Start';
+                    nextBtn.textContent = 'Start scanning';
                 }
             } else {
                 window.location.href = 'camera.html';

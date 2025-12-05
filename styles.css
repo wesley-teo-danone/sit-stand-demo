@@ -1,19 +1,13 @@
-html,
-body {
-  margin: 0;
-  font-family: 'Rethink sans', sans-serif;
+html {
+  background: linear-gradient(#effafe, #ffffff);
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  font-family: 'Rethink sans', sans-serif;
 }
 
 .page-header {
   width: 100%;
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 2rem;
 }
 
 .logo-brand img {
@@ -23,11 +17,13 @@ body {
 
 .landing-radio-group {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   gap: 1.25rem;
 }
+
 .landing-radio-group .form-check {
   display: flex;
   align-items: center;

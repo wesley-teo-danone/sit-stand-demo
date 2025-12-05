@@ -17,13 +17,9 @@
   <link href="styles.css" rel="stylesheet">
   <title>Sit2Scan</title>
   <style>
-    body {
-      background: linear-gradient(#b3e5fc, #c8e6c9);
-    }
-
     .container {
       width: 100%;
-      max-width: 1100px;
+      max-width: 900px;
       background: #fff;
       border-radius: 30px;
       box-shadow: 0 28px 80px rgba(50, 71, 194, 0.18);
@@ -34,35 +30,13 @@
       align-items: center;
     }
 
-    .icon {
-      font-size: 5rem;
-      color: #00796b;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 24px;
-      color: #004d40;
-    }
-
-    p {
+    div {
       font-size: 14px;
-      color: #555;
       margin: 10px 0 20px;
     }
 
-    input,
-    select {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-
     .btn {
-      background-color: #26a69a;
+      background-color: #2c79eb;
       color: white;
       border: none;
       padding: 12px;
@@ -73,7 +47,11 @@
     }
 
     .btn:hover {
-      background-color: #008a7a;
+      background-color: #2360bc;
+    }
+
+    .btn:disabled {
+      background-color: #b0b8c9;
     }
   </style>
 </head>
@@ -86,19 +64,20 @@
   </header>
   <div class="container">
     <!-- Headers -->
-    <div class="icon text-center">🏃</div>
-    <h1 class="text-center fw-bold" style="font-size:4rem; color:#004d40;">Sit2Scan</h1>
-    <p class="text-center text-secondary fs-6">Stay strong and energized.<br>Share a few details to personalize your
-      results.</p>
+    <img src="assets/sit_stand_icon.png" alt="Sit2Scan" style="width: clamp(80px, 18vw, 200px); height: auto;">
+    <h1 class="text-center fw-bold" style="font-size:3rem; color:#1b3259;">Sit2Scan</h1>
+    <div class="text-center">Stay active for what you love! Take a quick test to check your strength and nutrition.
+    </div>
 
+    <div class="text-center ">Your strength will be checked with a quick chair stand test using your
+      phone’s front camera.<br>We only need a few details to personalize your results</div>
     <form class="needs-validation w-100" novalidate>
-      <!-- Age validation -->
+      <!-- Age -->
       <div class="mb-3">
         <label for="age" class="form-label fw-semibold">Age</label>
-        <input type="number" class="form-control form-control-md" id="age" placeholder="Enter your age" required>
-        <div class="invalid-feedback">Please enter your age.</div>
+        <input type="date" class="form-control form-control-md" id="age" placeholder="Enter your age" required>
       </div>
-      <!-- Gender validation -->
+      <!-- Gender -->
       <div class="mb-3">
         <label class="form-label fw-semibold">Gender</label>
         <div class="landing-radio-group">
@@ -115,61 +94,70 @@
             <label class="form-check-label" for="genderOther">Other</label>
           </div>
         </div>
-        <div class="invalid-feedback" id="genderInvalid">Please select your gender.</div>
       </div>
-
-      <!-- Weight validation -->
+      <!-- Weight -->
       <div class="mb-3">
         <label for="weight" class="form-label fw-semibold">Weight (kg)</label>
         <input type="number" class="form-control form-control-md" id="weight" placeholder="Enter your weight" required>
-        <div class="invalid-feedback">Please enter your weight.</div>
       </div>
-
-      <!-- Height validation -->
+      <!-- Height -->
       <div class="mb-4">
         <label for="height" class="form-label fw-semibold">Height (cm)</label>
         <input type="number" class="form-control form-control-md" id="height" placeholder="Enter your height" required>
-        <div class="invalid-feedback">Please enter your height.</div>
       </div>
-      <button type="submit" class="btn btn-md btn-success w-100 fw-bold shadow-sm">Let's get ready</button>
+      <!-- Privacy Policy checkbox -->
+      <div class="mb-2">
+        <input class="form-check-input" type="checkbox" id="privacyPolicy" required>
+        <label class="form-check-label" for="privacyPolicy">
+          I agree that Danone may use the data collected for scientific research purposes​
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-md btn-success w-100 fw-bold shadow-sm">Let's get started</button>
+
     </form>
   </div>
 </body>
 <script>
-  // Bootstrap form validation with radio group fix and redirect on success
+  // Enable submit button only when all fields are filled
   (function () {
     'use strict';
     var forms = document.querySelectorAll('.needs-validation');
     Array.prototype.slice.call(forms).forEach(function (form) {
-      form.addEventListener('submit', function (event) {
-        // Custom validation for gender radio group
-        var genderRadios = form.querySelectorAll('input[name="gender"]');
+      var submitBtn = form.querySelector('button[type="submit"]');
+      var ageInput = form.querySelector('#age');
+      var genderRadios = form.querySelectorAll('input[name="gender"]');
+      var weightInput = form.querySelector('#weight');
+      var heightInput = form.querySelector('#height');
+      var privacyCheckbox = form.querySelector('#privacyPolicy');
+
+      function checkFormFilled() {
+        var ageFilled = ageInput && ageInput.value;
         var genderChecked = Array.prototype.slice.call(genderRadios).some(function (radio) { return radio.checked; });
-        var genderInvalid = form.querySelector('#genderInvalid');
-        if (!genderChecked) {
-          genderRadios[0].setCustomValidity('Please select your gender.');
-          if (genderInvalid) genderInvalid.style.display = 'block';
-        } else {
-          genderRadios[0].setCustomValidity('');
-          if (genderInvalid) genderInvalid.style.display = '';
-        }
-        if (!form.checkValidity()) {
-          event.preventDefault();
-          event.stopPropagation();
-        } else {
-          event.preventDefault();
+        var weightFilled = weightInput && weightInput.value;
+        var heightFilled = heightInput && heightInput.value;
+        var privacyChecked = privacyCheckbox && privacyCheckbox.checked;
+        submitBtn.disabled = !(ageFilled && genderChecked && weightFilled && heightFilled && privacyChecked);
+      }
+
+      // Initial check
+      checkFormFilled();
+
+      // Add event listeners
+      if (ageInput) ageInput.addEventListener('input', checkFormFilled);
+      if (weightInput) weightInput.addEventListener('input', checkFormFilled);
+      if (heightInput) heightInput.addEventListener('input', checkFormFilled);
+      if (privacyCheckbox) privacyCheckbox.addEventListener('change', checkFormFilled);
+      genderRadios.forEach(function (radio) {
+        radio.addEventListener('change', checkFormFilled);
+      });
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+        if (!submitBtn.disabled) {
           window.location.href = 'guide.html';
         }
-        form.classList.add('was-validated');
       }, false);
-      // Hide gender invalid feedback on change
-      var genderRadios = form.querySelectorAll('input[name="gender"]');
-      var genderInvalid = form.querySelector('#genderInvalid');
-      genderRadios.forEach(function (radio) {
-        radio.addEventListener('change', function () {
-          if (genderInvalid) genderInvalid.style.display = '';
-        });
-      });
     });
   })();
 </script>
