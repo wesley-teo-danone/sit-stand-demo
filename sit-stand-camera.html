@@ -212,11 +212,14 @@
 
 
 
-
-
-
-
   <script type="module" src="script.js"></script>
+  <script>
+    window.addEventListener('show-results', function (event) {
+      console.log(event.detail);
+      sessionStorage.setItem('summary', JSON.stringify(event.detail));
+      // window.location.href = 'malnutrition-questionnaire.html';
+    });
+  </script>
 </body>
 
 </html>

@@ -228,69 +228,72 @@ export function drawSmallPill_go_down(ctx, x, y, text, opts = {}) {
   ctx.restore();
 }
 
+function showResultsModal(summary) {
+  const event = new CustomEvent('show-results', { detail: summary });
+  window.dispatchEvent(event);
+  // const overlay = document.getElementById('results-overlay');
+  // overlay?.classList.remove('hidden');
+  // overlay?.setAttribute('aria-hidden', 'false');
 
+  // // Build SVG rings once (keeps your IDs)
+  // upgradeRingToSvg('rs-knee-ring',  '#22d3ee', '#06b6d4');  // cyan → teal
+  // upgradeRingToSvg('rs-depth-ring', '#fbbf24', '#f59e0b');  // amber range
+  // upgradeRingToSvg('rs-sym-ring',   '#34d399', '#10b981');  // green range
+  // upgradeRingToSvg('rs-back-ring',  '#a78bfa', '#8b5cf6');  // violet range
 
+  // // Set % with smooth dash animation
+  // setSvgRingProgress('rs-knee-ring',  summary.knee.pct, true);
+  // setSvgRingProgress('rs-depth-ring', summary.depth.pct, true);
+  // setSvgRingProgress('rs-sym-ring',   summary.symmetry.pct, true);
+  // setSvgRingProgress('rs-back-ring',  summary.back.pct, true);
 
-function showResultsModal(summary){
-  const overlay = document.getElementById('results-overlay');
-  overlay?.classList.remove('hidden');
-  overlay?.setAttribute('aria-hidden', 'false');
+  // // Update the numeric labels inside the inner disc
+  // const setPctText = (id, v) => {
+  //   const el = document.getElementById(id);
+  //   if (el) el.textContent = `${Math.round(Math.max(0, Math.min(100, v || 0)))}%`;
+  // };
+  // setPctText('rs-knee-pct',  summary.knee.pct);
+  // setPctText('rs-depth-pct', summary.depth.pct);
+  // setPctText('rs-sym-pct',   summary.symmetry.pct);
+  // setPctText('rs-back-pct',  summary.back.pct);
 
-  // Build SVG rings once (keeps your IDs)
-  upgradeRingToSvg('rs-knee-ring',  '#22d3ee', '#06b6d4');  // cyan → teal
-  upgradeRingToSvg('rs-depth-ring', '#fbbf24', '#f59e0b');  // amber range
-  upgradeRingToSvg('rs-sym-ring',   '#34d399', '#10b981');  // green range
-  upgradeRingToSvg('rs-back-ring',  '#a78bfa', '#8b5cf6');  // violet range
+  // // Footer stats
+  // document.getElementById('rs-reps-n').textContent = `${summary.reps ?? 0}`;
+  // document.getElementById('rs-overall').textContent = `${Math.round(summary.overall?.avg ?? 0)}`;
 
-  // Set % with smooth dash animation
-  setSvgRingProgress('rs-knee-ring',  summary.knee.pct, true);
-  setSvgRingProgress('rs-depth-ring', summary.depth.pct, true);
-  setSvgRingProgress('rs-sym-ring',   summary.symmetry.pct, true);
-  setSvgRingProgress('rs-back-ring',  summary.back.pct, true);
-
-  // Update the numeric labels inside the inner disc
-  const setPctText = (id, v) => {
-    const el = document.getElementById(id);
-    if (el) el.textContent = `${Math.round(Math.max(0, Math.min(100, v || 0)))}%`;
-  };
-  setPctText('rs-knee-pct',  summary.knee.pct);
-  setPctText('rs-depth-pct', summary.depth.pct);
-  setPctText('rs-sym-pct',   summary.symmetry.pct);
-  setPctText('rs-back-pct',  summary.back.pct);
-
-  // Footer stats
-  document.getElementById('rs-reps-n').textContent = `${summary.reps ?? 0}`;
-  document.getElementById('rs-overall').textContent = `${Math.round(summary.overall?.avg ?? 0)}`;
-
-  // Close behavior (same as earlier)
-  const btn = document.getElementById('rs-close-btn');
-  const onClose = () => {
-    overlay?.classList.add('hidden');
-    overlay?.setAttribute('aria-hidden', 'true');
-    btn?.removeEventListener('click', onClose);
-    handlePostResultsReset();
-  };
-  btn?.addEventListener('click', onClose, { once:true });
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) onClose(); }, { once:true });
+  // // Close behavior (same as earlier)
+  // const btn = document.getElementById('rs-close-btn');
+  // const onClose = () => {
+  //   overlay?.classList.add('hidden');
+  //   overlay?.setAttribute('aria-hidden', 'true');
+  //   btn?.removeEventListener('click', onClose);
+  //   handlePostResultsReset();
+  // };
+  // btn?.addEventListener('click', onClose, { once:true });
+  // overlay.addEventListener('click', (e) => { if (e.target === overlay) onClose(); }, { once:true });
 }
 
-
-
-
 // --- util: lerp + clamp ---
-export function lerp(a, b, t){ return a + (b - a) * Math.max(0, Math.min(1, t)); }
+export function lerp(a, b, t) {
+  return a + (b - a) * Math.max(0, Math.min(1, t));
+}
 
 // --- DOTTED horizontal line toward "back" side ---
 
-
 // --- Two-headed vertical arrow (between yTop and yBot) ---
-export function drawDoubleHeadedVArrow(ctx, x, yTop, yBot, {
-  shaftWidth = 6,
-  headSize   = 16,
-  color      = '#22d3ee',               // cyan-400 vibe
-  glow       = 'rgba(0,0,0,0.50)',
-  alpha      = 1
-} = {}) {
+export function drawDoubleHeadedVArrow(
+  ctx,
+  x,
+  yTop,
+  yBot,
+  {
+    shaftWidth = 6,
+    headSize = 16,
+    color = '#22d3ee', // cyan-400 vibe
+    glow = 'rgba(0,0,0,0.50)',
+    alpha = 1,
+  } = {},
+) {
   if (yBot < yTop) [yTop, yBot] = [yBot, yTop];
   const y1 = yTop + headSize + 2;
   const y2 = yBot - headSize - 2;
