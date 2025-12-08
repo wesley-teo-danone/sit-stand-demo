@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <!-- Use viewport-fit=cover for full screen on iOS -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Pose + Object Detection (Portrait Only)</title>
+  <link rel="stylesheet" href="sit-stand-camera-styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+</head>
+
+<body>
+
+
+
+
+
+  <!-- Desktop overlay -->
+  <div id="desktopOverlay">Please access this web application on your mobile device.</div>
+
+
+
+  <!-- Spinner/Loader -->
+  <div id="spinner">
+    <div class="spinner-content">
+      <div class="loader"></div>
+      <p class="loading-text">Loading...</p>
+    </div>
+  </div>
+
+  <!-- Camera view -->
+  <div id="webcam-wrapper">
+    <video id="webcam" autoplay playsinline muted></video>
+    <canvas id="output_canvas"></canvas>
+    <div id="phasePill" class="phase-pill tl is-hidden" aria-hidden="true" role="status" aria-live="polite">
+      <span class="dot" aria-hidden="true"></span>
+      <span id="phaseText"></span>
+    </div>
+    <div id="floatingMessage"></div>
+
+  </div>
+
+
+
+
+
+
+  <!-- Results Modal -->
+  <div id="results-overlay" class="rs-overlay hidden" aria-hidden="true">
+    <div class="rs-card" role="dialog" aria-modal="true" aria-labelledby="rs-title">
+
+      <!-- Header -->
+
+      <div class="rs-header">
+        <div class="rs-title-wrap">
+          <div id="rs-title" class="rs-title rs-title-one-line">Session Summary</div>
+        </div>
+        <button class="rs-close" id="rs-close-btn" type="button" aria-label="Close summary">✕</button>
+      </div>
+
+
+
+
+      <!-- Always 2×2 grid; each tile: label on top, ring below -->
+      <div class="rs-grid" role="group" aria-label="Metric scores">
+
+        <!-- Knee -->
+        <div class="rs-ring" role="group" aria-labelledby="rs-knee-label">
+          <div id="rs-knee-label" class="rs-label">Knee Score</div>
+          <div id="rs-knee-ring" class="rs-ring-figure" style="--deg:0deg; --ring-color:#22d3ee;" aria-hidden="true">
+            <div class="rs-ring-inner"><span id="rs-knee-pct">0%</span></div>
+          </div>
+        </div>
+
+        <!-- Depth -->
+        <div class="rs-ring" role="group" aria-labelledby="rs-depth-label">
+          <div id="rs-depth-label" class="rs-label">Depth Score</div>
+          <div id="rs-depth-ring" class="rs-ring-figure" style="--deg:0deg; --ring-color:#fbbf24;" aria-hidden="true">
+            <div class="rs-ring-inner"><span id="rs-depth-pct">0%</span></div>
+          </div>
+        </div>
+
+        <!-- Symmetry -->
+        <div class="rs-ring" role="group" aria-labelledby="rs-sym-label">
+          <div id="rs-sym-label" class="rs-label">Symmetry Score</div>
+          <div id="rs-sym-ring" class="rs-ring-figure" style="--deg:0deg; --ring-color:#34d399;" aria-hidden="true">
+            <div class="rs-ring-inner"><span id="rs-sym-pct">0%</span></div>
+          </div>
+        </div>
+
+        <!-- Back -->
+        <div class="rs-ring" role="group" aria-labelledby="rs-back-label">
+          <div id="rs-back-label" class="rs-label">Back Score</div>
+          <div id="rs-back-ring" class="rs-ring-figure" style="--deg:0deg; --ring-color:#a78bfa;" aria-hidden="true">
+            <div class="rs-ring-inner"><span id="rs-back-pct">0%</span></div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="rs-footer">
+        <div class="rs-stat" aria-label="Total repetitions">
+          <div class="label">Reps</div>
+          <div id="rs-reps-n" class="value">0</div>
+        </div>
+        <div class="rs-stat" aria-label="Overall score">
+          <div class="label">Overall Score</div>
+          <div id="rs-overall" class="value">—</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+
+  <div id="hud" class="sts-hud">
+    <div id="hudStart" class="hud-start">
+      <button id="sitStandStartBtn" type="button">Start</button>
+    </div>
+    <div id="hudCountdown" class="hud-count hidden" aria-live="assertive">
+      <div id="hudCountNum" class="hud-count-num">3</div>
+      <div class="hud-count-sub">Get set…</div>
+    </div>
+
+    <div class="status-bar" role="region" aria-label="Session Status">
+      <div class="status-inner">
+        <!-- Reps -->
+        <div class="reps" aria-live="polite">
+          <div>
+            <div class="label">Reps</div>
+            <div class="num" id="repsNum">0</div>
+          </div>
+        </div>
+
+        <!-- Form Tracker -->
+        <div class="form" aria-live="polite">
+          <div class="label">Form</div>
+          <div class="bar-row" id="formBars" aria-hidden="true">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+          <div class="score" id="formScore">–</div>
+        </div>
+
+
+
+        <div class="countdown">
+          <div class="label">Time</div>
+
+
+          <div class="ring" aria-live="polite">
+            <svg viewBox="0 0 40 40" aria-hidden="true" style="overflow: visible; transform: rotate(-90deg);">
+              <defs>
+
+                <linearGradient id="ringGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#FACC15" />
+                  <stop offset="100%" stop-color="#84CC16" />
+                </linearGradient>
+
+                <!-- Strong iPhone-safe glow (bigger region, inline filter) -->
+                <filter id="ringGlowStrong" x="-200%" y="-200%" width="500%" height="500%"
+                  color-interpolation-filters="sRGB">
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="b1" />
+                  <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b2" />
+                  <feComponentTransfer in="b2" result="boost">
+                    <feFuncA type="table" tableValues="0 0.6 1 1" />
+                  </feComponentTransfer>
+                  <feMerge>
+                    <feMergeNode in="b1" />
+                    <feMergeNode in="boost" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Faint track -->
+              <circle class="track" cx="20" cy="20" r="16" fill="none" stroke-width="6" />
+
+              <!-- NEW: fat halo underlay (thicker stroke + glow filter) -->
+              <circle class="progress-halo" id="ringProgressHalo" cx="20" cy="20" r="16" fill="none"
+                stroke="url(#ringGradient)" stroke-width="8" stroke-linecap="round" filter="url(#ringGlowStrong)"
+                opacity="0.35" />
+
+              <!-- Glow layer (keep your ID, apply inline filter) -->
+              <circle class="progress-glow" id="ringProgressGlow" cx="20" cy="20" r="16" fill="none"
+                stroke="url(#ringGradient)" stroke-width="6" stroke-linecap="round" filter="url(#ringGlowStrong)"
+                opacity="0.40" />
+
+              <!-- Crisp foreground progress (top stroke) -->
+              <circle class="progress" id="ringProgress" cx="20" cy="20" r="16" fill="none" stroke="url(#ringGradient)"
+                stroke-width="6" stroke-linecap="round" />
+            </svg>
+
+            <div class="time" id="ringText">20</div>
+          </div>
+
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+  <script type="module" src="script.js"></script>
+</body>
+
+</html>

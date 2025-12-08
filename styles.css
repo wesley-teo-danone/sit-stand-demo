@@ -1,7 +1,13 @@
-html {
+html,
+body {
   background: linear-gradient(#effafe, #ffffff);
-  height: 100vh;
+  height: 100%;
+  margin: 0;
   font-family: 'Rethink sans', sans-serif;
+}
+
+body {
+  min-height: 100vh;
 }
 
 .page-header {
