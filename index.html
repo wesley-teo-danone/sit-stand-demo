@@ -72,11 +72,12 @@
     phone’s front camera.<br>We only need a few details to personalize your results</div>
 
   <div class="container">
-    <form class="needs-validation w-100" novalidate>
+    <form>
       <!-- Age -->
       <div class="mb-3">
         <label for="age" class="form-label fw-semibold">Age</label>
-        <input type="date" class="form-control form-control-md" id="age" placeholder="Enter your age" required>
+        <input type="date" class="form-control form-control-md" id="age" name="age" placeholder="Enter your age"
+          required>
       </div>
       <!-- Gender -->
       <div class="mb-3">
@@ -87,11 +88,11 @@
             <label class="form-check-label" for="genderMale">Male</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="female">
+            <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="female" required>
             <label class="form-check-label" for="genderFemale">Female</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="gender" id="genderOther" value="other">
+            <input class="form-check-input" type="radio" name="gender" id="genderOther" value="other" required>
             <label class="form-check-label" for="genderOther">Other</label>
           </div>
         </div>
@@ -99,16 +100,18 @@
       <!-- Weight -->
       <div class="mb-3">
         <label for="weight" class="form-label fw-semibold">Weight (kg)</label>
-        <input type="number" class="form-control form-control-md" id="weight" placeholder="Enter your weight" required>
+        <input type="number" class="form-control form-control-md" id="weight" name="weight"
+          placeholder="Enter your weight" required>
       </div>
       <!-- Height -->
       <div class="mb-4">
         <label for="height" class="form-label fw-semibold">Height (cm)</label>
-        <input type="number" class="form-control form-control-md" id="height" placeholder="Enter your height" required>
+        <input type="number" class="form-control form-control-md" id="height" name="height"
+          placeholder="Enter your height" required>
       </div>
       <!-- Privacy Policy checkbox -->
       <div class="mb-2">
-        <input class="form-check-input" type="checkbox" id="privacyPolicy" required>
+        <input class="form-check-input" type="checkbox" id="privacyPolicy" name="privacyPolicy" required>
         <label class="form-check-label" for="privacyPolicy">
           I agree that Danone may use the data collected for scientific research purposes​
         </label>
@@ -119,47 +122,29 @@
   </div>
 </body>
 <script>
-  // Enable submit button only when all fields are filled
-  (function () {
-    'use strict';
-    var forms = document.querySelectorAll('.needs-validation');
-    Array.prototype.slice.call(forms).forEach(function (form) {
-      var submitBtn = form.querySelector('button[type="submit"]');
-      var ageInput = form.querySelector('#age');
-      var genderRadios = form.querySelectorAll('input[name="gender"]');
-      var weightInput = form.querySelector('#weight');
-      var heightInput = form.querySelector('#height');
-      var privacyCheckbox = form.querySelector('#privacyPolicy');
+  const form = document.querySelector('form');
+  const submitBtn = form.querySelector('button[type="submit"]');
 
-      function checkFormFilled() {
-        var ageFilled = ageInput && ageInput.value;
-        var genderChecked = Array.prototype.slice.call(genderRadios).some(function (radio) { return radio.checked; });
-        var weightFilled = weightInput && weightInput.value;
-        var heightFilled = heightInput && heightInput.value;
-        var privacyChecked = privacyCheckbox && privacyCheckbox.checked;
-        submitBtn.disabled = !(ageFilled && genderChecked && weightFilled && heightFilled && privacyChecked);
-      }
+  function checkFormValidity() {
+    submitBtn.disabled = !form.checkValidity();
+  }
 
-      // Initial check
-      checkFormFilled();
+  // Initial state
+  checkFormValidity();
 
-      // Add event listeners
-      if (ageInput) ageInput.addEventListener('input', checkFormFilled);
-      if (weightInput) weightInput.addEventListener('input', checkFormFilled);
-      if (heightInput) heightInput.addEventListener('input', checkFormFilled);
-      if (privacyCheckbox) privacyCheckbox.addEventListener('change', checkFormFilled);
-      genderRadios.forEach(function (radio) {
-        radio.addEventListener('change', checkFormFilled);
-      });
-
-      form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        if (!submitBtn.disabled) {
-          window.location.href = 'guide.html';
-        }
-      }, false);
-    });
-  })();
+  // Listen for input changes
+  form.addEventListener('input', checkFormValidity);
+  form.addEventListener('change', checkFormValidity);
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    const formData = new FormData(form);
+    const data = {};
+    for (const [key, value] of formData.entries()) {
+      data[key] = value;
+    }
+    localStorage.setItem('profile-data', JSON.stringify(data));
+    window.location.href = 'guide.html';
+  });
 </script>
 
 </html>
