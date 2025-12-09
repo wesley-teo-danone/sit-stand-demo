@@ -17,8 +17,15 @@
   <link href="styles.css" rel="stylesheet">
   <title>Sit2Scan</title>
   <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+    }
+
     .container {
-      height: 90%;
       width: 90%;
       max-width: 900px;
       background: #fff;
@@ -56,15 +63,15 @@
       <img src="assets/logo.svg" alt="Danone Logo" />
     </a>
   </header>
-  <div class="container">
-    <!-- Headers -->
-    <img src="assets/sit_stand_icon.png" alt="Sit2Scan" style="width: clamp(80px, 18vw, 180px); height: auto;">
-    <h1 class="header text-center">Sit2Scan</h1>
-    <div class="text-center">Stay active for what you love! Take a quick test to check your strength and nutrition.
-    </div>
+  <!-- Headers -->
+  <img src="assets/sit_stand_icon.png" alt="Sit2Scan" style="width: clamp(80px, 18vw, 180px); height: auto;">
+  <h1 class="header text-center">Sit2Scan</h1>
+  <div class="text-center">Stay active for what you love! Take a quick test to check your strength and nutrition.
+  </div>
+  <div class="text-center ">Your strength will be checked with a quick chair stand test using your
+    phone’s front camera.<br>We only need a few details to personalize your results</div>
 
-    <div class="text-center ">Your strength will be checked with a quick chair stand test using your
-      phone’s front camera.<br>We only need a few details to personalize your results</div>
+  <div class="container">
     <form class="needs-validation w-100" novalidate>
       <!-- Age -->
       <div class="mb-3">
@@ -107,8 +114,7 @@
         </label>
       </div>
 
-      <button type="submit" class="btn btn-md btn-success w-100 fw-bold shadow-sm">Let's get started</button>
-
+      <button type="submit" class="btn w-100">Let's get started</button>
     </form>
   </div>
 </body>

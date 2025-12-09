@@ -1,7 +1,6 @@
 html,
 body {
   background: linear-gradient(#effafe, #ffffff);
-  height: 100%;
   margin: 0;
   font-family: 'Rethink sans', sans-serif;
 }
@@ -23,7 +22,7 @@ body {
 
 .header {
   color: #1b3259;
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: bold;
 }
 
