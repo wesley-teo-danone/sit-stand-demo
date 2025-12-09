@@ -56,8 +56,8 @@
             <!-- Results will be populated here -->
         </div>
         <script>
-            // Retrieve form data from sessionStorage
-            const formData = JSON.parse(sessionStorage.getItem('malnutritionForm'));
+            // Retrieve form data from localFlcStorage
+            const formData = JSON.parse(localStorage.getItem('malnutritionForm'));
             const resultsDiv = document.getElementById('resultsContent');
 
             if (formData) {
