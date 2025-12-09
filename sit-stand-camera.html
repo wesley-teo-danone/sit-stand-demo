@@ -216,8 +216,8 @@
   <script>
     window.addEventListener('show-results', function (event) {
       console.log(event.detail);
-      localStorage.setItem('summary', JSON.stringify(event.detail));
-      // window.location.href = 'malnutrition-questionnaire.html';
+      localStorage.setItem('sit-stand-summary', JSON.stringify(event.detail));
+      window.location.href = 'malnutrition-questionnaire.html';
     });
   </script>
 </body>

@@ -339,27 +339,27 @@ function clearOverlay(canvas) {
     console.error('[endSession] stopSessionRecording failed:', e);
   }
 
-  try {
-    const zip = new JSZip();
+  // try {
+  //   const zip = new JSZip();
 
-    if (jsonFile?.blob && jsonFile?.name) {
-      zip.file(jsonFile.name, jsonFile.blob);
-    }
+  //   if (jsonFile?.blob && jsonFile?.name) {
+  //     zip.file(jsonFile.name, jsonFile.blob);
+  //   }
 
-    if (videoResult?.blob && videoResult?.filename) {
-      zip.file(videoResult.filename, videoResult.blob);
-    }
+  //   if (videoResult?.blob && videoResult?.filename) {
+  //     zip.file(videoResult.filename, videoResult.blob);
+  //   }
 
-    const zipName =
-      (jsonFile?.name && zipNameFromExisting(jsonFile.name)) ||
-      (videoResult?.filename && zipNameFromExisting(videoResult.filename)) ||
-      `${defaultFilenameBase()}.zip`;
+  //   const zipName =
+  //     (jsonFile?.name && zipNameFromExisting(jsonFile.name)) ||
+  //     (videoResult?.filename && zipNameFromExisting(videoResult.filename)) ||
+  //     `${defaultFilenameBase()}.zip`;
 
-    const zipBlob = await zip.generateAsync({ type: 'blob' });
-    await downloadBlob(zipName, zipBlob);
-  } catch (err) {
-    console.error('[endSession] ZIP packaging failed:', err);
-  }
+  //   const zipBlob = await zip.generateAsync({ type: 'blob' });
+  //   await downloadBlob(zipName, zipBlob);
+  // } catch (err) {
+  //   console.error('[endSession] ZIP packaging failed:', err);
+  // }
 
   // 5) UI visibility (unchanged)
   $countdown()?.classList.add('hidden');
