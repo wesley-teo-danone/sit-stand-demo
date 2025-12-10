@@ -55,23 +55,31 @@
         <div id="resultsContent">
             <!-- Results will be populated here -->
         </div>
-        <script>
-            // Retrieve form data from localFlcStorage
-            const formData = JSON.parse(localStorage.getItem('malnutritionForm'));
-            const resultsDiv = document.getElementById('resultsContent');
-
-            if (formData) {
-                let resultsHTML = '<h2>Screening Summary</h2><ul>';
-                for (const [question, answer] of Object.entries(formData)) {
-                    resultsHTML += `<li><strong>${question}:</strong> ${answer}</li>`;
-                }
-                resultsHTML += '</ul>';
-                resultsDiv.innerHTML = resultsHTML;
-            } else {
-                resultsDiv.innerHTML = '<p>No data available. Please complete the questionnaire first.</p>';
-            }
-        </script>
     </div>
 </body>
+<script src="scoring.js"></script>
+<script>
+    async function displayRiskScores() {
+        try {
+            const fallRiskScore = getFallRiskScore();
+            const { score: malnutritionRiskScore, category: malnutritionRiskCategory } = getMalnutritionRiskScore();
+
+            const resultsDiv = document.getElementById('resultsContent');
+            let resultsHTML = '<h2>Risk Scores</h2><ul>';
+            resultsHTML += `<li><strong>Fall Risk Score:</strong> ${fallRiskScore}</li>`;
+            resultsHTML += `<li><strong>Malnutrition Risk Score:</strong> ${malnutritionRiskScore}</li>`;
+            resultsHTML += `<li><strong>Malnutrition Risk Category:</strong> ${malnutritionRiskCategory}</li>`;
+            resultsHTML += '</ul>';
+
+            resultsDiv.innerHTML += resultsHTML;
+        } catch (error) {
+
+            alert('An error occurred while fetching risk scores. Please try again later.');
+            console.error('Error fetching risk scores:', error);
+        }
+    }
+
+    displayRiskScores();
+</script>
 
 </html>
