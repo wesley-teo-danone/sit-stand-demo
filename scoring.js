@@ -106,5 +106,5 @@ function getFallRiskScore() {
   }
   const reps = parsedSitStandSummary.reps;
   const performanceCategory = getSitStandPerformanceCategory(age, reps);
-  return performanceCategory;
+  return { reps, performanceCategory };
 }

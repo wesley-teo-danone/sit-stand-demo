@@ -20,22 +20,121 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
             padding: 1rem;
         }
 
-        .container {
-            width: 90%;
-            max-width: 900px;
-            background: #fff;
-            border-radius: 30px;
-            box-shadow: 0 28px 80px rgba(50, 71, 194, 0.18);
-            border: 1px solid rgba(255, 255, 255, 0.65);
-            padding: clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 6vw, 10rem);
+        .wrapper {
             display: flex;
             flex-direction: column;
+            width: 90%;
+            max-width: 800px;
+            gap: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 28px 80px rgba(50, 71, 194, 0.18);
+            border: 2px solid #7fafc0;
+            padding: clamp(0.5rem, 4vw, 1rem) clamp(0.5rem, 6vw, 1rem);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .container-header {
+            font-size: 1.25rem;
+            color: #555;
+            margin-bottom: 2rem;
+        }
+
+        .score-meter {
+            display: flex;
+            flex-direction: row;
+            /* Change to row for horizontal layout */
             align-items: center;
             justify-content: center;
+            gap: 1.2rem;
+            /* Adjust spacing between elements */
+            margin-top: 1rem;
+            /* Optional: Adjust margin */
+            width: 100%;
+        }
+
+        .score-meter__label {
+            margin: 0;
+            color: var(--grey-500);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .score-meter__visual {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            width: 100%;
+        }
+
+        .score-meter__value {
+            font-size: clamp(2.2rem, 8vw, 2.8rem);
+            font-weight: 600;
+            color: var(--brand-600);
+            min-width: 3.5rem;
+            text-align: right;
+        }
+
+        .score-meter__bar {
+            width: 100%;
+            height: 20px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            position: relative;
+        }
+
+        .score-meter__gradient {
+            width: 100%;
+            /* Fill the bar horizontally */
+            height: 100%;
+            /* Match the height of the bar */
+            border-radius: 16px;
+            background: linear-gradient(90deg,
+                    /* Horizontal gradient: red on the left, green on the right */
+                    #ff4d3a 0%,
+                    /* Red */
+                    #ff8f34 22%,
+                    /* Orange */
+                    #ffd447 50%,
+                    /* Yellow */
+                    #88d64b 78%,
+                    /* Light green */
+                    #27b83e 100%
+                    /* Green */
+                );
+            box-shadow:
+                inset 0 0 0 2px rgba(255, 255, 255, 0.2),
+                0 6px 12px rgba(50, 71, 194, 0.2);
+            /* Adjust shadow for horizontal layout */
+        }
+
+        .score-meter__pointer {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: left 0.3s ease;
+            /* Animate horizontal movement */
+        }
+
+        .score-meter__pointer-diamond {
+            width: 12px;
+            height: 12px;
+            background: #ffffff;
+            border: 1px solid black;
+            transform: rotate(45deg);
+            border-radius: 2px;
         }
     </style>
 </head>
@@ -46,34 +145,122 @@
             <img src="assets/logo.svg" alt="Danone Logo" />
         </a>
     </header>
-    <!-- Headers -->
-    <h1 class="header">Your Malnutrition Screening Results</h1>
-    <div class="text-center mb-4">
-        Here is an overview of your nutritional status based on your responses.
-    </div>
-    <div class="container">
-        <div id="resultsContent">
-            <!-- Results will be populated here -->
+    <div class="wrapper">
+        <!-- Headers -->
+        <h1 class="header text-center">Overview</h1>
+        <div class="d-flex flex-row align-items-center justify-content-around">
+            <img src="assets/sit_stand_icon.png" alt="Sit2Scan"
+                style="border: 2px solid black; border-radius: 50%; width: 100px; height: 100px; object-fit: cover;">
+            <div class="d-flex flex-column">
+                <div style="font-size: 2rem;"><strong id="fall-score-header-reps" style="font-size: 3rem;"></strong>
+                    repetitions</div>
+                <div style=" color:#3764b3;font-size: 2rem;" id="fall-score-header-text"></div>
+            </div>
         </div>
-    </div>
+
+        <div class="mb-2">Risk Indicators</div>
+        <!-- Fall Risk Score Bar -->
+        <div class="container" id="fall-risk-indicator">
+            <div>Fall risk</div>
+            <div class="score-meter d-none mb-5" id="fallScore">
+                <div class="score-meter__visual">
+                    <div class="score-meter__bar">
+                        <div class="score-meter__gradient"></div>
+                        <div class="score-meter__pointer" id="fallScore-pointer" aria-hidden="true">
+                            <span class="score-meter__pointer-diamond"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Malnutrition Risk Score Bar -->
+        <div class="container" id="malnutrition-risk-indicator">
+            <div>Malnutrition risk</div>
+            <div class="score-meter d-none mb-5" id="malnutritionScore">
+                <div class="score-meter__visual">
+                    <div class="score-meter__bar">
+                        <div class="score-meter__gradient"></div>
+                        <div class="score-meter__pointer" id="malnutritionScore-pointer" aria-hidden="true">
+                            <span class="score-meter__pointer-diamond"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Recommendations -->
+        <div class="mb-2">Recommendations</div>
+        <div class="container" id="recommendations">
+            <div id="resultsContent">
+                Your personalized nutrition and exercise advice will appear here
+            </div>
+        </div>
+
+        <div id="btn-wrapper" class="d-flex justify-content-center my-4">
+            <button class="btn w-100" id="restartBtn" onclick="location.href='index.html'">Restart Test</button>
+        </div>
 </body>
 <script src="scoring.js"></script>
 <script>
     async function displayRiskScores() {
         try {
-            const fallRiskScore = getFallRiskScore();
-            const { score: malnutritionRiskScore, category: malnutritionRiskCategory } = getMalnutritionRiskScore();
+            const { reps: fallReps, performanceCategory: fallRiskScore } = getFallRiskScore(); // Low, Moderate, High
+            const { score: malnutritionRiskScore, category: malnutritionRiskCategory } = getMalnutritionRiskScore(); //Score is 1 - 5
 
-            const resultsDiv = document.getElementById('resultsContent');
-            let resultsHTML = '<h2>Risk Scores</h2><ul>';
-            resultsHTML += `<li><strong>Fall Risk Score:</strong> ${fallRiskScore}</li>`;
-            resultsHTML += `<li><strong>Malnutrition Risk Score:</strong> ${malnutritionRiskScore}</li>`;
-            resultsHTML += `<li><strong>Malnutrition Risk Category:</strong> ${malnutritionRiskCategory}</li>`;
-            resultsHTML += '</ul>';
+            if (fallReps != null) {
+                const fallScoreHeader = document.getElementById("fall-score-header-reps");
+                fallScoreHeader.textContent = fallReps;
+                const fallScoreHeaderText = document.getElementById("fall-score-header-text");
+                if (fallRiskScore == "Low") {
+                    fallScoreHeaderText.textContent = "Great job!";
+                } else if (fallRiskScore == "Moderate") {
+                    fallScoreHeaderText.textContent = "Good job!";
+                } else if (fallRiskScore == "High") {
+                    fallScoreHeaderText.textContent = "Stay active!";
+                }
+            }
+            // Update Fall Risk Score Meter
+            const fallScoreContainer = document.getElementById("fallScore");
+            const fallScorePointer = document.getElementById("fallScore-pointer");
+            fallScorePointer.style.top = "50%"; // Center vertically
+            if (fallRiskScore) {
+                const FALL_MIN = 0;
+                const FALL_MAX = 100; // Use cutoff * 2 for max value
+                let value = 0;
+                if (fallRiskScore === 'Low') {
+                    value = 25;
+                } else if (fallRiskScore === 'Moderate') {
+                    value = 50;
+                } else if (fallRiskScore === 'High') {
+                    value = 75;
+                }
+                const ratio = (value - FALL_MIN) / (FALL_MAX - FALL_MIN);
+                const pointerLeft = ratio * 100; // Adjust for horizontal alignment
 
-            resultsDiv.innerHTML += resultsHTML;
+                fallScorePointer.style.left = `${pointerLeft}%`; // Set horizontal position
+                fallScoreContainer.classList.remove("d-none");
+            } else {
+                fallScoreContainer.classList.add("d-none");
+                fallScorePointer.style.left = "50%"; // Default to center if no score
+            }
+
+            // Update Malnutrition Risk Score Meter
+            const malnutritionScoreContainer = document.getElementById("malnutritionScore");
+            const malnutritionScorePointer = document.getElementById("malnutritionScore-pointer");
+            malnutritionScorePointer.style.top = "50%"; // Center vertically
+            if (malnutritionRiskScore) {
+                const MALNUTRITION_MIN = 0;
+                const MALNUTRITION_MAX = 5; // Use cutoff * 2 for max value
+                const ratio = (malnutritionRiskScore - MALNUTRITION_MIN) / (MALNUTRITION_MAX - MALNUTRITION_MIN);
+                const pointerLeft = ratio * 100; // Adjust for horizontal alignment
+
+                malnutritionScorePointer.style.left = `${pointerLeft}%`; // Set horizontal position
+                malnutritionScoreContainer.classList.remove("d-none");
+            } else {
+                malnutritionScoreContainer.classList.add("d-none");
+                malnutritionScorePointer.style.left = "50%"; // Default to center if no score
+            }
+
         } catch (error) {
-
             alert('An error occurred while fetching risk scores. Please try again later.');
             console.error('Error fetching risk scores:', error);
         }
