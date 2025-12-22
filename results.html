@@ -16,13 +16,6 @@
     <link href="styles.css" rel="stylesheet">
     <title>Sit2Scan Results</title>
     <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 1rem;
-        }
-
         .wrapper {
             display: flex;
             flex-direction: column;
@@ -148,9 +141,9 @@
     <div class="wrapper">
         <!-- Headers -->
         <h1 class="header text-center">Overview</h1>
-        <div class="d-flex flex-row align-items-center justify-content-around">
-            <img src="assets/sit_stand_icon.png" alt="Sit2Scan"
-                style="border: 2px solid black; border-radius: 50%; width: 100px; height: 100px; object-fit: cover;">
+        <div class="d-flex flex-row align-items-center justify-content-center gap-4">
+            <img src="assets/results_icon.png" alt="Sit2Scan"
+                style="border-radius: 50%; width: 120px; height: 120px; object-fit: cover;">
             <div class="d-flex flex-column">
                 <div style="font-size: 2rem;"><strong id="fall-score-header-reps" style="font-size: 3rem;"></strong>
                     repetitions</div>
@@ -205,7 +198,7 @@
         try {
             const { reps: fallReps, performanceCategory: fallRiskScore } = getFallRiskScore(); // Low, Moderate, High
             const { score: malnutritionRiskScore, category: malnutritionRiskCategory } = getMalnutritionRiskScore(); //Score is 1 - 5
-
+            console.log('Fall Risk Score:', fallRiskScore);
             if (fallReps != null) {
                 const fallScoreHeader = document.getElementById("fall-score-header-reps");
                 fallScoreHeader.textContent = fallReps;
