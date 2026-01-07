@@ -228,7 +228,7 @@
                     value = 75;
                 }
                 const ratio = (value - FALL_MIN) / (FALL_MAX - FALL_MIN);
-                const pointerLeft = Math.min(5, ratio * 100); // Adjust for horizontal alignment
+                const pointerLeft = Math.max(5, ratio * 100); // Adjust for horizontal alignment
 
                 fallScorePointer.style.left = `${pointerLeft}%`; // Set horizontal position
                 fallScoreContainer.classList.remove("d-none");
@@ -245,7 +245,7 @@
                 const MALNUTRITION_MIN = 0;
                 const MALNUTRITION_MAX = 5; // Use cutoff * 2 for max value
                 const ratio = (malnutritionRiskScore - MALNUTRITION_MIN) / (MALNUTRITION_MAX - MALNUTRITION_MIN);
-                const pointerLeft = Math.min(5, ratio * 100); // Adjust for horizontal alignment
+                const pointerLeft = Math.max(5, ratio * 100); // Adjust for horizontal alignment
 
                 malnutritionScorePointer.style.left = `${pointerLeft}%`; // Set horizontal position
                 malnutritionScoreContainer.classList.remove("d-none");
