@@ -1,16 +1,16 @@
-
-import { handlePostResultsReset } from "../core/sitstand.js";
-import { lmToPx } from "./angles.js";
-function upgradeRingToSvg(ringId, startHex, endHex){
+import { handlePostResultsReset } from '../core/sitstand.js';
+import { lmToPx } from './angles.js';
+function upgradeRingToSvg(ringId, startHex, endHex) {
   const host = document.getElementById(ringId);
-  if (!host || host.dataset.svgReady === "1") return;
+  if (!host || host.dataset.svgReady === '1') return;
 
   // Unique IDs so multiple rings don't clash
   const uid = ringId;
   const gradId = `grad_${uid}`;
   const filtId = `glow_${uid}`;
 
-  host.innerHTML = `
+  host.innerHTML =
+    `
     <svg viewBox="0 0 40 40" class="rs-ring-svg" aria-hidden="true">
       <defs>
         <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
@@ -55,21 +55,23 @@ function upgradeRingToSvg(ringId, startHex, endHex){
     </svg>
   ` + host.innerHTML; // keep your .rs-ring-inner label on top
 
-  host.dataset.svgReady = "1";
+  host.dataset.svgReady = '1';
 }
 
 // Smoothly set progress (0–100)
-function setSvgRingProgress(ringId, pct, animate = true){
+function setSvgRingProgress(ringId, pct, animate = true) {
   const host = document.getElementById(ringId);
   if (!host) return;
   const svg = host.querySelector('svg');
   if (!svg) return;
 
   const val = Math.max(0, Math.min(100, Number(pct) || 0));
-  const targets = svg.querySelectorAll('.progress, .progress-glow, .progress-halo');
+  const targets = svg.querySelectorAll(
+    '.progress, .progress-glow, .progress-halo'
+  );
 
   // animate via CSS transition on stroke-dashoffset
-  targets.forEach(el => {
+  targets.forEach((el) => {
     if (animate) {
       el.style.transition = 'stroke-dashoffset 360ms cubic-bezier(.2,.8,.2,1)';
     } else {
@@ -79,15 +81,16 @@ function setSvgRingProgress(ringId, pct, animate = true){
   });
 }
 
-
-
-
-
-export function drawDownArrow(ctx, x, y, {
-  shaft = 90,   // total length from start (y) down to the tip
-  head  = 24,   // head size
-  width = 6     // shaft thickness
-} = {}) {
+export function drawDownArrow(
+  ctx,
+  x,
+  y,
+  {
+    shaft = 90, // total length from start (y) down to the tip
+    head = 24, // head size
+    width = 6 // shaft thickness
+  } = {}
+) {
   ctx.save();
   ctx.globalAlpha = 0.85;
   ctx.shadowColor = 'rgba(0,0,0,0.50)';
@@ -96,13 +99,13 @@ export function drawDownArrow(ctx, x, y, {
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   ctx.strokeStyle = '#ef4444';
-  ctx.fillStyle   = '#ef4444';
-  ctx.lineWidth   = width;
+  ctx.fillStyle = '#ef4444';
+  ctx.lineWidth = width;
 
   // Keep head proportion reasonable relative to shaft
-  const headH = Math.min(head, shaft * 0.6);        // head can't exceed 60% of total
+  const headH = Math.min(head, shaft * 0.6); // head can't exceed 60% of total
   const shaftEndY = y + Math.max(0, shaft - headH); // bottom of the shaft (above head)
-  const tipY = shaftEndY + headH;                   // tip is the lowest point
+  const tipY = shaftEndY + headH; // tip is the lowest point
 
   // --- Shaft: strictly from y downward ---
   ctx.beginPath();
@@ -112,9 +115,9 @@ export function drawDownArrow(ctx, x, y, {
 
   // --- Head: triangle pointing down, fully below y ---
   ctx.beginPath();
-  ctx.moveTo(x - headH * 0.5, shaftEndY);  // left base
-  ctx.lineTo(x + headH * 0.5, shaftEndY);  // right base
-  ctx.lineTo(x,                 tipY);     // tip (down)
+  ctx.moveTo(x - headH * 0.5, shaftEndY); // left base
+  ctx.lineTo(x + headH * 0.5, shaftEndY); // right base
+  ctx.lineTo(x, tipY); // tip (down)
   ctx.closePath();
   ctx.fill();
 
@@ -127,22 +130,25 @@ export function drawDownArrow(ctx, x, y, {
   ctx.restore();
 }
 
-
-
 // Hi-DPI safe chevron stack; nothing renders above y
-export function drawDownChevrons(ctx, x, y, {
-  count = 3, gap = 14, size = 22, width = 6, alpha = 0.95
-} = {}) {
+export function drawDownChevrons(
+  ctx,
+  x,
+  y,
+  { count = 3, gap = 14, size = 22, width = 6, alpha = 0.95 } = {}
+) {
   ctx.save();
-  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  ctx.shadowColor = 'rgba(0,0,0,0.50)'; ctx.shadowBlur = 10;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.shadowColor = 'rgba(0,0,0,0.50)';
+  ctx.shadowBlur = 10;
 
   for (let i = 0; i < count; i++) {
     const yy = y + i * (size + gap);
     const half = size * 0.6;
-    const top  = yy;
-    const mid  = yy + size * 0.5; // ensures all geometry is ≥ y
-    const bot  = yy + size;
+    const top = yy;
+    const mid = yy + size * 0.5; // ensures all geometry is ≥ y
+    const bot = yy + size;
 
     ctx.globalAlpha = alpha * (1 - i * 0.15); // subtle fade down
     ctx.strokeStyle = '#ef4444';
@@ -151,7 +157,7 @@ export function drawDownChevrons(ctx, x, y, {
     ctx.beginPath();
     // "V" shape chevron pointing down
     ctx.moveTo(x - half, top);
-    ctx.lineTo(x,       bot);
+    ctx.lineTo(x, bot);
     ctx.lineTo(x + half, top);
     ctx.stroke();
 
@@ -167,11 +173,9 @@ export function drawDownChevrons(ctx, x, y, {
   ctx.restore();
 }
 
-
-
 export function drawSmallPill_go_down(ctx, x, y, text, opts = {}) {
-  const fg     = opts.fg     || '#ef4444';              // bright red text
-  const bg     = opts.bg     || 'rgba(2,6,23,0.92)';    // darker slate bg
+  const fg = opts.fg || '#ef4444'; // bright red text
+  const bg = opts.bg || 'rgba(2,6,23,0.92)'; // darker slate bg
   const border = opts.border || 'rgba(239,68,68,0.55)'; // soft red border
   const shadow = opts.shadow ?? true;
 
@@ -186,7 +190,7 @@ export function drawSmallPill_go_down(ctx, x, y, text, opts = {}) {
   const h = Math.ceil((opts.height || 40) + (padY - 10));
   const r = opts.radius || 18;
   const left = Math.round(x - w / 2);
-  const top  = Math.round(y - h / 2);
+  const top = Math.round(y - h / 2);
 
   // Soft shadow to lift off video
   if (shadow) {
@@ -229,48 +233,54 @@ export function drawSmallPill_go_down(ctx, x, y, text, opts = {}) {
 }
 
 function showResultsModal(summary) {
-  const event = new CustomEvent('show-results', { detail: summary });
-  window.dispatchEvent(event);
-  // const overlay = document.getElementById('results-overlay');
-  // overlay?.classList.remove('hidden');
-  // overlay?.setAttribute('aria-hidden', 'false');
+  const overlay = document.getElementById('results-overlay');
+  overlay?.classList.remove('hidden');
+  overlay?.setAttribute('aria-hidden', 'false');
 
-  // // Build SVG rings once (keeps your IDs)
-  // upgradeRingToSvg('rs-knee-ring',  '#22d3ee', '#06b6d4');  // cyan → teal
-  // upgradeRingToSvg('rs-depth-ring', '#fbbf24', '#f59e0b');  // amber range
-  // upgradeRingToSvg('rs-sym-ring',   '#34d399', '#10b981');  // green range
-  // upgradeRingToSvg('rs-back-ring',  '#a78bfa', '#8b5cf6');  // violet range
+  // Build SVG rings once (keeps your IDs)
+  upgradeRingToSvg('rs-knee-ring', '#22d3ee', '#06b6d4'); // cyan → teal
+  upgradeRingToSvg('rs-depth-ring', '#fbbf24', '#f59e0b'); // amber range
+  upgradeRingToSvg('rs-sym-ring', '#34d399', '#10b981'); // green range
+  upgradeRingToSvg('rs-back-ring', '#a78bfa', '#8b5cf6'); // violet range
 
-  // // Set % with smooth dash animation
-  // setSvgRingProgress('rs-knee-ring',  summary.knee.pct, true);
-  // setSvgRingProgress('rs-depth-ring', summary.depth.pct, true);
-  // setSvgRingProgress('rs-sym-ring',   summary.symmetry.pct, true);
-  // setSvgRingProgress('rs-back-ring',  summary.back.pct, true);
+  // Set % with smooth dash animation
+  setSvgRingProgress('rs-knee-ring', summary.knee.pct, true);
+  setSvgRingProgress('rs-depth-ring', summary.depth.pct, true);
+  setSvgRingProgress('rs-sym-ring', summary.symmetry.pct, true);
+  setSvgRingProgress('rs-back-ring', summary.back.pct, true);
 
-  // // Update the numeric labels inside the inner disc
-  // const setPctText = (id, v) => {
-  //   const el = document.getElementById(id);
-  //   if (el) el.textContent = `${Math.round(Math.max(0, Math.min(100, v || 0)))}%`;
-  // };
-  // setPctText('rs-knee-pct',  summary.knee.pct);
-  // setPctText('rs-depth-pct', summary.depth.pct);
-  // setPctText('rs-sym-pct',   summary.symmetry.pct);
-  // setPctText('rs-back-pct',  summary.back.pct);
+  // Update the numeric labels inside the inner disc
+  const setPctText = (id, v) => {
+    const el = document.getElementById(id);
+    if (el)
+      el.textContent = `${Math.round(Math.max(0, Math.min(100, v || 0)))}%`;
+  };
+  setPctText('rs-knee-pct', summary.knee.pct);
+  setPctText('rs-depth-pct', summary.depth.pct);
+  setPctText('rs-sym-pct', summary.symmetry.pct);
+  setPctText('rs-back-pct', summary.back.pct);
 
-  // // Footer stats
-  // document.getElementById('rs-reps-n').textContent = `${summary.reps ?? 0}`;
-  // document.getElementById('rs-overall').textContent = `${Math.round(summary.overall?.avg ?? 0)}`;
+  // Footer stats
+  document.getElementById('rs-reps-n').textContent = `${summary.reps ?? 0}`;
+  document.getElementById('rs-overall').textContent =
+    `${Math.round(summary.overall?.avg ?? 0)}`;
 
-  // // Close behavior (same as earlier)
-  // const btn = document.getElementById('rs-close-btn');
-  // const onClose = () => {
-  //   overlay?.classList.add('hidden');
-  //   overlay?.setAttribute('aria-hidden', 'true');
-  //   btn?.removeEventListener('click', onClose);
-  //   handlePostResultsReset();
-  // };
-  // btn?.addEventListener('click', onClose, { once:true });
-  // overlay.addEventListener('click', (e) => { if (e.target === overlay) onClose(); }, { once:true });
+  // Close behavior (same as earlier)
+  const btn = document.getElementById('rs-close-btn');
+  const onClose = () => {
+    overlay?.classList.add('hidden');
+    overlay?.setAttribute('aria-hidden', 'true');
+    btn?.removeEventListener('click', onClose);
+    handlePostResultsReset();
+  };
+  btn?.addEventListener('click', onClose, { once: true });
+  overlay.addEventListener(
+    'click',
+    (e) => {
+      if (e.target === overlay) onClose();
+    },
+    { once: true }
+  );
 }
 
 // --- util: lerp + clamp ---
@@ -291,8 +301,8 @@ export function drawDoubleHeadedVArrow(
     headSize = 16,
     color = '#22d3ee', // cyan-400 vibe
     glow = 'rgba(0,0,0,0.50)',
-    alpha = 1,
-  } = {},
+    alpha = 1
+  } = {}
 ) {
   if (yBot < yTop) [yTop, yBot] = [yBot, yTop];
   const y1 = yTop + headSize + 2;
@@ -303,10 +313,10 @@ export function drawDoubleHeadedVArrow(
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   ctx.strokeStyle = color;
-  ctx.fillStyle   = color;
-  ctx.lineWidth   = shaftWidth;
+  ctx.fillStyle = color;
+  ctx.lineWidth = shaftWidth;
   ctx.shadowColor = glow;
-  ctx.shadowBlur  = 14;
+  ctx.shadowBlur = 14;
 
   // Shaft
   ctx.beginPath();
@@ -333,21 +343,28 @@ export function drawDoubleHeadedVArrow(
   ctx.restore();
 }
 
-export function drawDottedHLineToX(ctx, x0, y, x1, {
-  dash = 10, gap = 10,
-  color = 'rgba(255,255,255,0.88)',
-  glow  = 'rgba(0,0,0,0.45)',
-  width = 4,
-  alpha = 1
-} = {}) {
+export function drawDottedHLineToX(
+  ctx,
+  x0,
+  y,
+  x1,
+  {
+    dash = 10,
+    gap = 10,
+    color = 'rgba(255,255,255,0.88)',
+    glow = 'rgba(0,0,0,0.45)',
+    width = 4,
+    alpha = 1
+  } = {}
+) {
   ctx.save();
   ctx.globalAlpha = alpha;
   ctx.strokeStyle = color;
-  ctx.lineWidth   = width;
-  ctx.lineCap     = 'round';
+  ctx.lineWidth = width;
+  ctx.lineCap = 'round';
   ctx.setLineDash([dash, gap]);
   ctx.shadowColor = glow;
-  ctx.shadowBlur  = 12;
+  ctx.shadowBlur = 12;
 
   ctx.beginPath();
   ctx.moveTo(x0, y);
@@ -356,15 +373,11 @@ export function drawDottedHLineToX(ctx, x0, y, x1, {
   ctx.restore();
 }
 
-
-
-
-
-
-
 // Convert a few pose lms to canvas px (re-uses your lmToPx)
 export function lmTripletToPx(pose, a, b, c, canvas) {
-  const A = pose[a], B = pose[b], C = pose[c];
+  const A = pose[a],
+    B = pose[b],
+    C = pose[c];
   if (!A || !B || !C) return null;
   return [lmToPx(A, canvas), lmToPx(B, canvas), lmToPx(C, canvas)];
 }
@@ -373,25 +386,29 @@ export function lmTripletToPx(pose, a, b, c, canvas) {
  * Draw a soft glow along a polyline path (A→B→C).
  * Uses stacked strokes + additive blend to get a halo.
  */
-export function drawGlowPath(ctx, pts, {
-  width = 18,           // core shaft width
-  layers = 4,           // stacked strokes
-  alpha = 0.9,          // overall opacity
-  color = 'rgb(34,197,94)', // base (green 500). We’ll pass red/green.
-  blur = 24,            // shadow blur
-  feather = 0.5         // how much each outer layer expands
-} = {}) {
+export function drawGlowPath(
+  ctx,
+  pts,
+  {
+    width = 18, // core shaft width
+    layers = 4, // stacked strokes
+    alpha = 0.9, // overall opacity
+    color = 'rgb(34,197,94)', // base (green 500). We’ll pass red/green.
+    blur = 24, // shadow blur
+    feather = 0.5 // how much each outer layer expands
+  } = {}
+) {
   if (!pts || pts.length < 2) return;
 
   ctx.save();
-  ctx.globalCompositeOperation = 'lighter';  // additive glow
+  ctx.globalCompositeOperation = 'lighter'; // additive glow
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
   for (let i = 0; i < layers; i++) {
-    const t = i / (layers - 1 || 1);     // 0..1
+    const t = i / (layers - 1 || 1); // 0..1
     const w = width * (1 + feather * t); // wider outward
-    const a = alpha * (1 - t * 0.75);    // fade outward
+    const a = alpha * (1 - t * 0.75); // fade outward
 
     ctx.beginPath();
     ctx.moveTo(pts[0].x, pts[0].y);
@@ -413,16 +430,25 @@ export function drawGlowPath(ctx, pts, {
  * Convenience: draw glow from shoulder→elbow→wrist for one side.
  * Skips if any of those landmarks are low-visibility.
  */
-export function drawArmGlow(ctx, pose, side /* 'L'|'R' */, canvas, {
-  color = 'rgba(34,197,94,0.5)',
-  alpha = 0.50,
-  pulse = 1.0,
-  visThr = 0.35
-} = {}) {
-  const L_SH = 11, R_SH = 12, L_EL = 13, R_EL = 14, L_WR = 15, R_WR = 16;
-  const idx = (side === 'L')
-    ? [L_SH, L_EL, L_WR]
-    : [R_SH, R_EL, R_WR];
+export function drawArmGlow(
+  ctx,
+  pose,
+  side /* 'L'|'R' */,
+  canvas,
+  {
+    color = 'rgba(34,197,94,0.5)',
+    alpha = 0.5,
+    pulse = 1.0,
+    visThr = 0.35
+  } = {}
+) {
+  const L_SH = 11,
+    R_SH = 12,
+    L_EL = 13,
+    R_EL = 14,
+    L_WR = 15,
+    R_WR = 16;
+  const idx = side === 'L' ? [L_SH, L_EL, L_WR] : [R_SH, R_EL, R_WR];
 
   // Visibility check
   for (const i of idx) {
@@ -443,9 +469,6 @@ export function drawArmGlow(ctx, pose, side /* 'L'|'R' */, canvas, {
   });
 }
 
-
-
-
 const floatingMessageEl = document.getElementById('floatingMessage');
 let angleHintOn = false;
 
@@ -465,8 +488,4 @@ export function hideAngleHint() {
   angleHintOn = false;
 }
 
-
-
-
-
-export{upgradeRingToSvg,setSvgRingProgress,showResultsModal};
+export { upgradeRingToSvg, setSvgRingProgress, showResultsModal };

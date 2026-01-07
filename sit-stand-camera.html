@@ -122,6 +122,26 @@
     <div id="hudStart" class="hud-start">
       <button id="sitStandStartBtn" type="button">Start</button>
     </div>
+
+    <div id="hudCalib" class="hud-calib hidden" aria-live="polite">
+      <!-- Left: full body visible -->
+      <div id="calibFull" class="hud-calib-item">
+        <span class="material-icons calib-main-icon" aria-hidden="true">
+          accessibility
+        </span>
+        <span class="material-icons calib-status-icon" aria-hidden="true">
+          close
+        </span>
+      </div>
+
+      <!-- Right: stand at 45° -->
+      <div id="calibAngle" class="hud-calib-item">
+        <span class="calib-label">Stand at 45°</span>
+        <span class="material-icons calib-status-icon" aria-hidden="true">
+          close
+        </span>
+      </div>
+    </div>
     <div id="hudCountdown" class="hud-count hidden" aria-live="assertive">
       <div id="hudCountNum" class="hud-count-num">3</div>
       <div class="hud-count-sub">Get set…</div>
@@ -212,14 +232,11 @@
 
 
 
+
+
+
+
   <script type="module" src="script.js"></script>
-  <script>
-    window.addEventListener('show-results', function (event) {
-      console.log(event.detail);
-      localStorage.setItem('sit-stand-summary', JSON.stringify(event.detail));
-      window.location.href = 'malnutrition-questionnaire.html';
-    });
-  </script>
 </body>
 
 </html>

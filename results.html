@@ -141,15 +141,9 @@
     <div class="wrapper">
         <!-- Headers -->
         <h1 class="header text-center">Overview</h1>
-<<<<<<< HEAD
         <div class="d-flex flex-row align-items-center justify-content-around">
             <img src="assets/sit_stand_icon.png" alt="Sit2Scan"
                 style="background-color:#FFFFFF; border-radius: 50%; width: 120px; height: 120px; object-fit: cover;">
-=======
-        <div class="d-flex flex-row align-items-center justify-content-center gap-4">
-            <img src="assets/results_icon.png" alt="Sit2Scan"
-                style="border-radius: 50%; width: 120px; height: 120px; object-fit: cover;">
->>>>>>> 9a47386eb6d9acff39df13d677905f283c106359
             <div class="d-flex flex-column">
                 <div style="font-size: 2rem;"><strong id="fall-score-header-reps" style="font-size: 3rem;"></strong>
                     repetitions</div>
@@ -204,12 +198,8 @@
         try {
             const { reps: fallReps, performanceCategory: fallRiskScore } = getFallRiskScore(); // Low, Moderate, High
             const { score: malnutritionRiskScore, category: malnutritionRiskCategory } = getMalnutritionRiskScore(); //Score is 1 - 5
-<<<<<<< HEAD
             console.log(fallReps, fallRiskScore, malnutritionRiskScore, malnutritionRiskCategory);
 
-=======
-            console.log('Fall Risk Score:', fallRiskScore);
->>>>>>> 9a47386eb6d9acff39df13d677905f283c106359
             if (fallReps != null) {
                 const fallScoreHeader = document.getElementById("fall-score-header-reps");
                 fallScoreHeader.textContent = fallReps;

@@ -1123,3 +1123,117 @@ body {
     opacity: 1;
   }
 }
+
+/* === Calibration HUD: two checks at the bottom === */
+
+.hud-calib {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--hud-height, 100px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+
+  background: #000;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 14px calc(8px + env(safe-area-inset-bottom));
+  z-index: 1001;
+}
+
+.hud-calib-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 12px;
+  border-radius: 999px;
+
+  background: radial-gradient(
+    circle at top left,
+    rgba(15, 23, 42, 0.95),
+    rgba(15, 23, 42, 0.8)
+  );
+  border: 1px solid rgba(148, 163, 184, 0.6);
+}
+
+/* Left icon: accessibility */
+/* .calib-main-icon {
+  font-size: 22px;
+  color: #e0f2fe;
+} */
+
+.calib-main-icon {
+  font-size: 22px;
+  color: #e0f2fe;
+
+  /* --- ADD THIS TO FIX THE GLITCH --- */
+  display: inline-flex; /* Ensure box model works correctly */
+  justify-content: center;
+  align-items: center;
+  width: 24px; /* Fixed width slightly larger than font-size */
+  height: 24px; /* Fixed height */
+  overflow: hidden; /* Clips the text string (e.g., "accessibility") */
+  flex-shrink: 0; /* Prevents the icon from getting squished */
+  line-height: 1; /* normalize line-height */
+}
+/* Right label: "Stand at 45°" */
+.calib-label {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Status icon: red cross by default */
+/* .calib-status-icon {
+  font-size: 20px;
+  color: #f97373; 
+  text-shadow:
+    0 0 6px rgba(248,113,113,0.75),
+    0 0 1px rgba(0,0,0,0.9);
+} */
+.calib-status-icon {
+  font-size: 20px;
+  color: #f97373;
+  text-shadow:
+    0 0 6px rgba(248, 113, 113, 0.75),
+    0 0 1px rgba(0, 0, 0, 0.9);
+
+  /* --- ADD THIS TO FIX THE GLITCH --- */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px; /* Fixed width matches the other icon for symmetry */
+  height: 24px;
+  overflow: hidden;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* When an item passes its check: add .ok to the item */
+.hud-calib-item.ok {
+  background: radial-gradient(
+    circle at top left,
+    rgba(22, 163, 74, 0.32),
+    rgba(15, 23, 42, 0.92)
+  );
+  border-color: rgba(34, 197, 94, 0.85);
+  box-shadow: 0 0 16px rgba(34, 197, 94, 0.55);
+}
+
+.hud-calib-item.ok .calib-status-icon {
+  color: #22c55e; /* green */
+  text-shadow:
+    0 0 10px rgba(34, 197, 94, 0.9),
+    0 0 1px rgba(0, 0, 0, 0.9);
+}
+
+/* Small phones */
+@media (max-width: 380px) {
+  .hud-calib {
+    gap: 10px;
+  }
+}

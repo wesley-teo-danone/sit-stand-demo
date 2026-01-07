@@ -1,30 +1,25 @@
-
-
-   export function defaultFilenameBase() {
-    const { studyId, visitId } = (window.APP_DATA || {});
-    const sid = studyId ;
-    const vid = visitId ;
-    const date = dateDDMMYYYY();
-    if (!sid || sid === 'unknown') {
+export function defaultFilenameBase() {
+  const { studyId, visitId } = window.APP_DATA || {};
+  const sid = studyId;
+  const vid = visitId;
+  const date = dateDDMMYYYY();
+  if (!sid || sid === 'unknown') {
     return `session-${vid}-${date}`;
-    }
-    return `${sid}-${vid}-${date}`;
-    }
+  }
+  return `${sid}-${vid}-${date}`;
+}
 
-
-
-
-    export function sanitizePart(s) {
+export function sanitizePart(s) {
   return String(s || '')
     .trim()
     .replace(/[^a-zA-Z0-9._-]+/g, ''); // keep alnum, dot, underscore, dash
 }
-    export function dateDDMMYYYY(d = new Date()) {
-    const dd = String(d.getDate()).padStart(2, '0');
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const yyyy = d.getFullYear();
-    return `${dd}${mm}${yyyy}`;
-    }
+export function dateDDMMYYYY(d = new Date()) {
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yyyy = d.getFullYear();
+  return `${dd}${mm}${yyyy}`;
+}
 
 function pickSupported(types) {
   for (const t of types) {
@@ -42,16 +37,27 @@ function ts() {
 const RawSessionRecorder = (() => {
   let mediaRecorder = null;
   let chunks = [];
-  let outStream = null;   
+  let outStream = null;
   let lastMime = '';
 
-  async function start({ videoEl, includeMic = false, videoBitsPerSecond } = {}) {
-    const video = videoEl || document.getElementById('webcam') || document.querySelector('video');
-    if (!video) throw new Error('RawSessionRecorder.start: <video> element not found.');
+  async function start({
+    videoEl,
+    includeMic = false,
+    videoBitsPerSecond
+  } = {}) {
+    const video =
+      videoEl ||
+      document.getElementById('webcam') ||
+      document.querySelector('video');
+    if (!video)
+      throw new Error('RawSessionRecorder.start: <video> element not found.');
 
     let camStream = video.srcObject;
     if (!(camStream instanceof MediaStream)) {
-      camStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      camStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: false
+      });
     }
     const vTrack = camStream.getVideoTracks()[0];
     if (!vTrack) throw new Error('No video track available from camera.');
@@ -66,11 +72,17 @@ const RawSessionRecorder = (() => {
         outStream.addTrack(aTrack.clone());
       } else {
         try {
-          const mic = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+          const mic = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: false
+          });
           const micTrack = mic.getAudioTracks()[0];
           if (micTrack) outStream.addTrack(micTrack);
         } catch (e) {
-          console.warn('[RawSessionRecorder] Mic unavailable; continuing video-only.', e);
+          console.warn(
+            '[RawSessionRecorder] Mic unavailable; continuing video-only.',
+            e
+          );
         }
       }
     }
@@ -90,50 +102,51 @@ const RawSessionRecorder = (() => {
     if (videoBitsPerSecond) opts.videoBitsPerSecond = videoBitsPerSecond;
 
     mediaRecorder = new MediaRecorder(outStream, opts);
-    mediaRecorder.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data && e.data.size) chunks.push(e.data);
+    };
     mediaRecorder.start();
   }
 
-
-
-
-  function stop({ download = true, filenameBase = defaultFilenameBase() } = {}) {
- return new Promise((resolve) => {
-   if (!mediaRecorder) return resolve(null);
-   mediaRecorder.onstop = () => {
-     try {
-       // Stop our cloned tracks
-       outStream?.getTracks().forEach(t => t.stop());
-       const type = mediaRecorder.mimeType || lastMime || 'video/webm';
-       const ext  = guessExt(type);        // your existing helper
-       const blob = new Blob(chunks, { type });
-       const url  = URL.createObjectURL(blob);
-       // Build final filename
-       const base = sanitizePart(filenameBase) || defaultFilenameBase();
-       const filename = `${base}.${ext}`;
-       if (download) {
-         const a = document.createElement('a');
-         a.href = url;
-         a.download = filename;
-         document.body.appendChild(a);
-         a.click();
-         a.remove();
-         setTimeout(() => URL.revokeObjectURL(url), 10_000);
-       }
-       mediaRecorder = null;
-       chunks = [];
-       outStream = null;
-       lastMime = '';
-       resolve({ blob, url, filename, type });
-     } catch (err) {
-       console.error('[RawSessionRecorder] stop failed:', err);
-       resolve(null);
-     }
-   };
-   mediaRecorder.stop();
- });
-}
-
+  function stop({
+    download = true,
+    filenameBase = defaultFilenameBase()
+  } = {}) {
+    return new Promise((resolve) => {
+      if (!mediaRecorder) return resolve(null);
+      mediaRecorder.onstop = () => {
+        try {
+          // Stop our cloned tracks
+          outStream?.getTracks().forEach((t) => t.stop());
+          const type = mediaRecorder.mimeType || lastMime || 'video/webm';
+          const ext = guessExt(type); // your existing helper
+          const blob = new Blob(chunks, { type });
+          const url = URL.createObjectURL(blob);
+          // Build final filename
+          const base = sanitizePart(filenameBase) || defaultFilenameBase();
+          const filename = `${base}.${ext}`;
+          if (download) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 10_000);
+          }
+          mediaRecorder = null;
+          chunks = [];
+          outStream = null;
+          lastMime = '';
+          resolve({ blob, url, filename, type });
+        } catch (err) {
+          console.error('[RawSessionRecorder] stop failed:', err);
+          resolve(null);
+        }
+      };
+      mediaRecorder.stop();
+    });
+  }
 
   function isRecording() {
     return !!mediaRecorder && mediaRecorder.state === 'recording';
@@ -144,21 +157,21 @@ const RawSessionRecorder = (() => {
 
 // Thin exports you can import from sitstand.js
 export async function startSessionRecording(opts = {}) {
-  try { await RawSessionRecorder.start(opts); }
-  catch (e) { console.error('[startSessionRecording] failed:', e); throw e; }
+  try {
+    await RawSessionRecorder.start(opts);
+  } catch (e) {
+    console.error('[startSessionRecording] failed:', e);
+    throw e;
+  }
 }
-
-
-
-
 
 export async function stopSessionRecording(reason = 'finished') {
   const filenameBase = defaultFilenameBase();
 
   try {
     return await RawSessionRecorder.stop({
-      download: false,          // <-- IMPORTANT: no direct video download
-      filenameBase,
+      download: false, // <-- IMPORTANT: no direct video download
+      filenameBase
     });
   } catch (e) {
     console.error('[stopSessionRecording] failed:', e);
@@ -169,4 +182,3 @@ export async function stopSessionRecording(reason = 'finished') {
 export function isSessionRecording() {
   return RawSessionRecorder.isRecording();
 }
-

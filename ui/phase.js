@@ -1,17 +1,17 @@
-function setPhaseLabel(text, align = 'left'){
+function setPhaseLabel(text, align = 'left') {
   const pill = document.getElementById('phasePill');
   const span = document.getElementById('phaseText');
   if (!pill || !span) return;
 
-  if (span.textContent !== text){
+  if (span.textContent !== text) {
     span.textContent = text;
     pill.classList.remove('bump');
-    requestAnimationFrame(()=> pill.classList.add('bump'));
+    requestAnimationFrame(() => pill.classList.add('bump'));
   }
   pill.classList.toggle('tc', align === 'center');
   pill.classList.toggle('tl', align !== 'center');
 }
-function setPillVisible(visible){
+function setPillVisible(visible) {
   const pill = document.getElementById('phasePill');
   if (!pill) return;
   pill.classList.toggle('is-hidden', !visible);
@@ -19,9 +19,11 @@ function setPillVisible(visible){
 }
 
 // convenience wrappers
-function showPill(){ setPillVisible(true); }
-function hidePill(){ setPillVisible(false); }
+function showPill() {
+  setPillVisible(true);
+}
+function hidePill() {
+  setPillVisible(false);
+}
 
-
-
-export{setPhaseLabel,showPill,hidePill};
+export { setPhaseLabel, showPill, hidePill };

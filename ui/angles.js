@@ -1,49 +1,60 @@
+const EPS_DEG = 0.5; // treat <0.5° as zero (tweak if needed)
 
-const EPS_DEG = 0.5;   // treat <0.5° as zero (tweak if needed)
-
-function lmToPx(lm, canvas){ return { x: lm.x * canvas.width, y: lm.y * canvas.height }; }
-
-
+function lmToPx(lm, canvas) {
+  return { x: lm.x * canvas.width, y: lm.y * canvas.height };
+}
 
 // angle between two vectors (0..180)
-function angleBetweenDeg(ax, ay, bx, by){
+function angleBetweenDeg(ax, ay, bx, by) {
   const ma = Math.hypot(ax, ay) || 1e-6;
   const mb = Math.hypot(bx, by) || 1e-6;
-  const cos = (ax*bx + ay*by) / (ma*mb);
-  return Math.acos(Math.max(-1, Math.min(1, cos))) * 180/Math.PI;
+  const cos = (ax * bx + ay * by) / (ma * mb);
+  return (Math.acos(Math.max(-1, Math.min(1, cos))) * 180) / Math.PI;
 }
 
 // short dotted vertical
-function drawDottedVerticalRef(ctx, cx, cy, len = 70, color = 'rgba(255,255,255,0.9)'){
-
-
-  const y0 = Math.max(0, cy - len);  // cap at canvas top
-  const y1 = cy;   
+function drawDottedVerticalRef(
+  ctx,
+  cx,
+  cy,
+  len = 70,
+  color = 'rgba(255,255,255,0.9)'
+) {
+  const y0 = Math.max(0, cy - len); // cap at canvas top
+  const y1 = cy;
   ctx.save();
   ctx.strokeStyle = color;
   ctx.lineWidth = 4;
   ctx.lineCap = 'round';
-  ctx.setLineDash([2,10]);
-  ctx.beginPath(); ctx.moveTo(cx,y0); ctx.lineTo(cx,y1); ctx.stroke();
+  ctx.setLineDash([2, 10]);
+  ctx.beginPath();
+  ctx.moveTo(cx, y0);
+  ctx.lineTo(cx, y1);
+  ctx.stroke();
   ctx.restore();
 }
 
-
-
-
-function drawArcFromVerticalUpDirected(ctx, cx, cy, tx, ty, radius = 34, color = '#7dd3fc', isLeft = false){
+function drawArcFromVerticalUpDirected(
+  ctx,
+  cx,
+  cy,
+  tx,
+  ty,
+  radius = 34,
+  color = '#7dd3fc',
+  isLeft = false
+) {
   // guard near-zero vector
 
-  
   // const px = cx * ctx.canvas.width;
   // const py = cy * ctx.canvas.height;
 
   const m = Math.hypot(tx, ty);
   if (m < 1e-6) return;
 
-  const start = -Math.PI / 2;             // vertical UP angle
+  const start = -Math.PI / 2; // vertical UP angle
   // angle between vertical-UP and target (0..PI)
-  const dot = (0 * tx + (-1) * ty) / m;   // = -ty / |v|
+  const dot = (0 * tx + -1 * ty) / m; // = -ty / |v|
   const theta = Math.acos(Math.max(-1, Math.min(1, -ty / m)));
 
   // direction: left -> CCW (positive), right -> CW (negative)
@@ -59,21 +70,26 @@ function drawArcFromVerticalUpDirected(ctx, cx, cy, tx, ty, radius = 34, color =
   ctx.restore();
 }
 
-
-
 // Signed angle from vertical-UP (0,-1) to vector (vx,vy), in degrees (-180..+180)
-function signedAngleFromVerticalUpDeg(vx, vy){
-  return Math.atan2(vx, -vy) * 180 / Math.PI;  // atan2(cross, dot) with u=(0,-1)
+function signedAngleFromVerticalUpDeg(vx, vy) {
+  return (Math.atan2(vx, -vy) * 180) / Math.PI; // atan2(cross, dot) with u=(0,-1)
 }
 
-
-function drawArcFromVerticalUpSigned(ctx, cx, cy, vx, vy, radius = 34, color = '#7dd3fc'){
+function drawArcFromVerticalUpSigned(
+  ctx,
+  cx,
+  cy,
+  vx,
+  vy,
+  radius = 34,
+  color = '#7dd3fc'
+) {
   const m = Math.hypot(vx, vy);
   if (m < 1e-6) return;
 
-  const start = -Math.PI / 2;     // vertical UP in canvas
+  const start = -Math.PI / 2; // vertical UP in canvas
   const theta = Math.atan2(vx, -vy); // (-PI..PI) signed
-  const end   = start + theta;
+  const end = start + theta;
 
   ctx.save();
   ctx.strokeStyle = color;
@@ -87,34 +103,30 @@ function drawArcFromVerticalUpSigned(ctx, cx, cy, vx, vy, radius = 34, color = '
   ctx.restore();
 }
 
-
-
-
-
-
 // Rounded-rect path
-function roundRectPath(ctx, x, y, w, h, r){
-  const rr = Math.min(r, h/2, w/2);
+function roundRectPath(ctx, x, y, w, h, r) {
+  const rr = Math.min(r, h / 2, w / 2);
   const p = new Path2D();
-  p.moveTo(x+rr, y);
-  p.arcTo(x+w, y,   x+w, y+h, rr);
-  p.arcTo(x+w, y+h, x,   y+h, rr);
-  p.arcTo(x,   y+h, x,   y,   rr);
-  p.arcTo(x,   y,   x+w, y,   rr);
+  p.moveTo(x + rr, y);
+  p.arcTo(x + w, y, x + w, y + h, rr);
+  p.arcTo(x + w, y + h, x, y + h, rr);
+  p.arcTo(x, y + h, x, y, rr);
+  p.arcTo(x, y, x + w, y, rr);
   p.closePath();
   return p;
 }
 
-
-function drawPillLabel(ctx, x, y, text, opt={}){
+function drawPillLabel(ctx, x, y, text, opt = {}) {
   const {
-    fg = '#0ea5e9',                            // cyan for back, swap to amber for knee
-    bg = 'rgba(17,24,39,0.78)',                // slate-900 @ ~78%
+    fg = '#0ea5e9', // cyan for back, swap to amber for knee
+    bg = 'rgba(17,24,39,0.78)', // slate-900 @ ~78%
     border = 'rgba(255,255,255,0.18)',
     shadow = 'rgba(0,0,0,0.35)',
-    px = 13, py = 8, radius = 13,
-    tail = 'up',                                // looks nice near arcs; try 'left' for side
-    offset = {dx: 10, dy: -14},
+    px = 13,
+    py = 8,
+    radius = 13,
+    tail = 'up', // looks nice near arcs; try 'left' for side
+    offset = { dx: 10, dy: -14 },
     minContrastOnBg = true
   } = opt;
 
@@ -126,15 +138,16 @@ function drawPillLabel(ctx, x, y, text, opt={}){
   ctx.textAlign = 'left';
   const tw = Math.ceil(ctx.measureText(text).width);
   const th = 24; // visual line height
-  const w = tw + px*2;
-  const h = th + py*2;
+  const w = tw + px * 2;
+  const h = th + py * 2;
 
   // Decide placement (auto-flip if near edges)
   let bx = x + offset.dx;
   let by = y + offset.dy;
 
   const padEdge = 8;
-  const cw = ctx.canvas.width, ch = ctx.canvas.height;
+  const cw = ctx.canvas.width,
+    ch = ctx.canvas.height;
 
   // If off right edge, move left
   if (bx + w + padEdge > cw) bx = x - offset.dx - w;
@@ -142,7 +155,8 @@ function drawPillLabel(ctx, x, y, text, opt={}){
   if (bx < padEdge) bx = padEdge;
   // If off top, push down; if off bottom, push up
   if (by < padEdge) by = Math.min(y + Math.abs(offset.dy), ch - h - padEdge);
-  if (by + h + padEdge > ch) by = Math.max(padEdge, y - Math.abs(offset.dy) - h);
+  if (by + h + padEdge > ch)
+    by = Math.max(padEdge, y - Math.abs(offset.dy) - h);
 
   // Background gradient (subtle vertical sheen)
   const g = ctx.createLinearGradient(0, by, 0, by + h);
@@ -169,24 +183,24 @@ function drawPillLabel(ctx, x, y, text, opt={}){
   if (tail) {
     const t = new Path2D();
     const tailSize = 8;
-    if (tail === 'up'){
-      const cx = Math.min(Math.max(x, bx+radius), bx+w-radius);
+    if (tail === 'up') {
+      const cx = Math.min(Math.max(x, bx + radius), bx + w - radius);
       t.moveTo(cx, by);
       t.lineTo(cx - tailSize, by - tailSize);
       t.lineTo(cx + tailSize, by - tailSize);
-    } else if (tail === 'down'){
-      const cx = Math.min(Math.max(x, bx+radius), bx+w-radius);
-      t.moveTo(cx, by+h);
+    } else if (tail === 'down') {
+      const cx = Math.min(Math.max(x, bx + radius), bx + w - radius);
+      t.moveTo(cx, by + h);
       t.lineTo(cx - tailSize, by + h + tailSize);
       t.lineTo(cx + tailSize, by + h + tailSize);
-    } else if (tail === 'left'){
-      const cy = Math.min(Math.max(y, by+radius), by+h-radius);
+    } else if (tail === 'left') {
+      const cy = Math.min(Math.max(y, by + radius), by + h - radius);
       t.moveTo(bx, cy);
       t.lineTo(bx - tailSize, cy - tailSize);
       t.lineTo(bx - tailSize, cy + tailSize);
-    } else if (tail === 'right'){
-      const cy = Math.min(Math.max(y, by+radius), by+h-radius);
-      t.moveTo(bx+w, cy);
+    } else if (tail === 'right') {
+      const cy = Math.min(Math.max(y, by + radius), by + h - radius);
+      t.moveTo(bx + w, cy);
       t.lineTo(bx + w + tailSize, cy - tailSize);
       t.lineTo(bx + w + tailSize, cy + tailSize);
     }
@@ -199,47 +213,45 @@ function drawPillLabel(ctx, x, y, text, opt={}){
   }
 
   // Text (with subtle stroke for contrast)
-  if (minContrastOnBg){
+  if (minContrastOnBg) {
     ctx.lineWidth = 2;
     ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-    ctx.strokeText(text, bx + px, by + h/2);
+    ctx.strokeText(text, bx + px, by + h / 2);
   }
   ctx.fillStyle = fg;
-  ctx.fillText(text, bx + px, by + h/2);
+  ctx.fillText(text, bx + px, by + h / 2);
 
   ctx.restore();
 }
 
-
-
 function drawPillLabelPhase(ctx, text, opt = {}) {
   const {
     // Placement
-    align = 'top-left',       // 'top-left' | 'top-center'
-    margin = 12,              // px from top edge
+    align = 'top-left', // 'top-left' | 'top-center'
+    margin = 12, // px from top edge
     // Sizing & typography
     scale = 1.0,
     fontSize = 22,
     lineHeight = 24,
     weight = '700',
-    px = 16,                  // horizontal padding
-    py = 10,                  // vertical padding
+    px = 16, // horizontal padding
+    py = 10, // vertical padding
     radius = 16,
     // Visual theme (single theme)
-    fg = '#e2f6ff',           // text
+    fg = '#e2f6ff', // text
     bg = 'rgba(15, 23, 42, 0.62)', // slate-900 @ ~62% for nice glass look
     border = 'rgba(255,255,255,0.16)',
     shadow = 'rgba(0,0,0,0.35)',
     // Extras
-    showDot = true,           // small status dot before text
-    dotColor = '#38bdf8',     // cyan-400
-    minContrastStroke = true, // dark outline behind text/dot
+    showDot = true, // small status dot before text
+    dotColor = '#38bdf8', // cyan-400
+    minContrastStroke = true // dark outline behind text/dot
   } = opt;
 
   // Local helpers (inline to keep single-function requirement)
   const rr = (x, y, w, h, r) => {
     const p = new Path2D();
-    const rr_ = Math.min(r, h/2, w/2);
+    const rr_ = Math.min(r, h / 2, w / 2);
     p.moveTo(x + rr_, y);
     p.arcTo(x + w, y, x + w, y + h, rr_);
     p.arcTo(x + w, y + h, x, y + h, rr_);
@@ -249,7 +261,7 @@ function drawPillLabelPhase(ctx, text, opt = {}) {
     return p;
   };
 
-  const DPR = (window.devicePixelRatio || 1);
+  const DPR = window.devicePixelRatio || 1;
   const s = scale;
 
   const PADX = px * s;
@@ -257,8 +269,8 @@ function drawPillLabelPhase(ctx, text, opt = {}) {
   const R = radius * s;
   const FS = fontSize * s;
   const LH = lineHeight * s;
-  const dotGap = showDot ? (10 * s) : 0;
-  const dotSize = showDot ? (8 * s) : 0;
+  const dotGap = showDot ? 10 * s : 0;
+  const dotSize = showDot ? 8 * s : 0;
 
   ctx.save();
   ctx.font = `${weight} ${FS}px ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto`;
@@ -272,10 +284,11 @@ function drawPillLabelPhase(ctx, text, opt = {}) {
 
   // Anchor
   const cw = ctx.canvas.width;
-  const top = Math.round((margin * DPR));
-  const left = (align === 'top-center')
-    ? Math.round((cw - w) / 2)
-    : Math.round((margin * DPR));
+  const top = Math.round(margin * DPR);
+  const left =
+    align === 'top-center'
+      ? Math.round((cw - w) / 2)
+      : Math.round(margin * DPR);
 
   // Lift shadow
   ctx.shadowColor = shadow;
@@ -285,12 +298,14 @@ function drawPillLabelPhase(ctx, text, opt = {}) {
 
   // Background: soft vertical gradient (glassy)
   const g = ctx.createLinearGradient(0, top, 0, top + h);
-  g.addColorStop(0.00, bg);
+  g.addColorStop(0.0, bg);
   g.addColorStop(0.55, bg);
-  g.addColorStop(1.00, bg.replace(
-    /rgba?\(([^,]+,){3}\s*([0-9.]+)\)/,
-    (m, _g, a) => m.replace(a, Math.min(1, (parseFloat(a)||0.62)+0.08))
-  ));
+  g.addColorStop(
+    1.0,
+    bg.replace(/rgba?\(([^,]+,){3}\s*([0-9.]+)\)/, (m, _g, a) =>
+      m.replace(a, Math.min(1, (parseFloat(a) || 0.62) + 0.08))
+    )
+  );
 
   const pill = rr(left, top, w, h, R);
   ctx.fillStyle = g;
@@ -322,16 +337,18 @@ function drawPillLabelPhase(ctx, text, opt = {}) {
     ctx.lineWidth = 2 * s;
     ctx.strokeStyle = 'rgba(0,0,0,0.55)';
     if (showDot) {
-      ctx.beginPath(); ctx.arc(tx + dotSize/2, ty, dotSize/2, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(tx + dotSize / 2, ty, dotSize / 2, 0, Math.PI * 2);
+      ctx.stroke();
     }
-    ctx.strokeText(text, tx + (showDot ? (dotSize + dotGap) : 0), ty);
+    ctx.strokeText(text, tx + (showDot ? dotSize + dotGap : 0), ty);
   }
 
   // Dot
   if (showDot) {
     ctx.fillStyle = dotColor;
     ctx.beginPath();
-    ctx.arc(tx + dotSize/2, ty, dotSize/2, 0, Math.PI * 2);
+    ctx.arc(tx + dotSize / 2, ty, dotSize / 2, 0, Math.PI * 2);
     ctx.fill();
     tx += dotSize + dotGap;
   }
@@ -346,27 +363,21 @@ function drawPillLabelPhase(ctx, text, opt = {}) {
   return { x: left, y: top, w, h };
 }
 
-
-
-
-
-
-
-
 function drawPillLabelFade(ctx, x, y, text, opt = {}) {
   const {
     fg = '#0ea5e9',
     bg = 'rgba(17,24,39,0.78)',
     border = 'rgba(255,255,255,0.18)',
     shadow = 'rgba(0,0,0,0.35)',
-    px = 13, py = 8, radius = 13,
+    px = 13,
+    py = 8,
+    radius = 13,
 
     tail = null,
 
-
     anchorX = null,
     sideLR = null,
-    gap = 12,           
+    gap = 12,
 
     offset = { dx: 10, dy: -14 },
 
@@ -385,26 +396,27 @@ function drawPillLabelFade(ctx, x, y, text, opt = {}) {
   ctx.textAlign = 'left';
   const tw = Math.ceil(ctx.measureText(text).width);
   const th = 24;
-  const w = tw + px*2;
-  const h = th + py*2;
+  const w = tw + px * 2;
+  const h = th + py * 2;
 
   // Compute base box (bx, by)
-  const cw = ctx.canvas.width, ch = ctx.canvas.height;
+  const cw = ctx.canvas.width,
+    ch = ctx.canvas.height;
   const padEdge = 8;
 
   let bx, by;
 
   if (anchorX != null && (sideLR === 'left' || sideLR === 'right')) {
     if (sideLR === 'right') {
-      bx = anchorX + gap;           
+      bx = anchorX + gap;
       bx = Math.min(bx, Math.max(anchorX + gap, cw - w - padEdge));
     } else {
-      bx = anchorX - gap - w;        
-      bx = Math.max(bx, padEdge);   
+      bx = anchorX - gap - w;
+      bx = Math.max(bx, padEdge);
       if (bx + w > anchorX - gap) bx = anchorX - gap - w;
       if (bx < padEdge) bx = padEdge; // final safety clamp
     }
-    by = y - h/2; 
+    by = y - h / 2;
     if (by < padEdge) by = padEdge;
     if (by + h + padEdge > ch) by = Math.max(padEdge, ch - h - padEdge);
   } else {
@@ -413,7 +425,8 @@ function drawPillLabelFade(ctx, x, y, text, opt = {}) {
     if (bx + w + padEdge > cw) bx = x - offset.dx - w;
     if (bx < padEdge) bx = padEdge;
     if (by < padEdge) by = Math.min(y + Math.abs(offset.dy), ch - h - padEdge);
-    if (by + h + padEdge > ch) by = Math.max(padEdge, y - Math.abs(offset.dy) - h);
+    if (by + h + padEdge > ch)
+      by = Math.max(padEdge, y - Math.abs(offset.dy) - h);
   }
 
   // Background gradient and pill path
@@ -438,29 +451,29 @@ function drawPillLabelFade(ctx, x, y, text, opt = {}) {
 
   let tailDir = tail;
   if (!tailDir && (sideLR === 'left' || sideLR === 'right')) {
-    tailDir = (sideLR === 'right') ? 'left' : 'right';
+    tailDir = sideLR === 'right' ? 'left' : 'right';
   }
   if (tailDir) {
     const t = new Path2D();
     const tailSize = 8;
     if (tailDir === 'up') {
-      const cx = Math.min(Math.max(x, bx+radius), bx+w-radius);
+      const cx = Math.min(Math.max(x, bx + radius), bx + w - radius);
       t.moveTo(cx, by);
       t.lineTo(cx - tailSize, by - tailSize);
       t.lineTo(cx + tailSize, by - tailSize);
     } else if (tailDir === 'down') {
-      const cx = Math.min(Math.max(x, bx+radius), bx+w-radius);
-      t.moveTo(cx, by+h);
+      const cx = Math.min(Math.max(x, bx + radius), bx + w - radius);
+      t.moveTo(cx, by + h);
       t.lineTo(cx - tailSize, by + h + tailSize);
       t.lineTo(cx + tailSize, by + h + tailSize);
     } else if (tailDir === 'left') {
-      const cy = Math.min(Math.max(y, by+radius), by+h-radius);
+      const cy = Math.min(Math.max(y, by + radius), by + h - radius);
       t.moveTo(bx, cy);
       t.lineTo(bx - tailSize, cy - tailSize);
       t.lineTo(bx - tailSize, cy + tailSize);
     } else if (tailDir === 'right') {
-      const cy = Math.min(Math.max(y, by+radius), by+h-radius);
-      t.moveTo(bx+w, cy);
+      const cy = Math.min(Math.max(y, by + radius), by + h - radius);
+      t.moveTo(bx + w, cy);
       t.lineTo(bx + w + tailSize, cy - tailSize);
       t.lineTo(bx + w + tailSize, cy + tailSize);
     }
@@ -475,15 +488,24 @@ function drawPillLabelFade(ctx, x, y, text, opt = {}) {
   if (minContrastOnBg) {
     ctx.lineWidth = 2;
     ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-    ctx.strokeText(text, bx + px, by + h/2);
+    ctx.strokeText(text, bx + px, by + h / 2);
   }
   ctx.fillStyle = fg;
-  ctx.fillText(text, bx + px, by + h/2);
+  ctx.fillText(text, bx + px, by + h / 2);
 
   ctx.globalAlpha = prevAlpha;
   ctx.restore();
 }
 
-
-
-export{lmToPx,angleBetweenDeg,drawDottedVerticalRef,EPS_DEG,drawArcFromVerticalUpDirected,signedAngleFromVerticalUpDeg,drawArcFromVerticalUpSigned,drawPillLabel,drawPillLabelPhase,drawPillLabelFade};
+export {
+  lmToPx,
+  angleBetweenDeg,
+  drawDottedVerticalRef,
+  EPS_DEG,
+  drawArcFromVerticalUpDirected,
+  signedAngleFromVerticalUpDeg,
+  drawArcFromVerticalUpSigned,
+  drawPillLabel,
+  drawPillLabelPhase,
+  drawPillLabelFade
+};
