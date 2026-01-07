@@ -241,12 +241,12 @@
             const malnutritionScoreContainer = document.getElementById("malnutritionScore");
             const malnutritionScorePointer = document.getElementById("malnutritionScore-pointer");
             malnutritionScorePointer.style.top = "50%"; // Center vertically
-            if (malnutritionRiskScore) {
+            if (malnutritionRiskScore != null) {
                 const MALNUTRITION_MIN = 0;
                 const MALNUTRITION_MAX = 5; // Use cutoff * 2 for max value
-                const ratio = (malnutritionRiskScore - MALNUTRITION_MIN) / (MALNUTRITION_MAX - MALNUTRITION_MIN);
-                const pointerLeft = Math.max(5, ratio * 100); // Adjust for horizontal alignment
-
+                // Invert the ratio so higher scores are on the left
+                const ratio = 1 - ((malnutritionRiskScore - MALNUTRITION_MIN) / (MALNUTRITION_MAX - MALNUTRITION_MIN));
+                const pointerLeft = Math.min(95, ratio * 100); // Adjust for horizontal alignment
                 malnutritionScorePointer.style.left = `${pointerLeft}%`; // Set horizontal position
                 malnutritionScoreContainer.classList.remove("d-none");
             } else {
