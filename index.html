@@ -6,7 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
     content="Introduction to the Sit-To-Stand tool with instructions for use and data collection." />
-
+  <!-- jQuery and jQuery UI for datepicker -->
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
   <!-- Rethink Sans font to match theme -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,8 +73,10 @@
         <!-- Age -->
         <div class="mb-3">
           <label for="dob" class="form-label fw-semibold">Date of Birth</label>
-          <input type="date" class="form-control form-control-md" id="dob" name="dob"
-            placeholder="Enter your date of birth" required>
+          <input class="form-control" id="datepicker" name="dob" type="text" placeholder="DD/MM/YYYY" required readonly>
+
+          <!-- <input type="date" class="form-control form-control-md" id="dob" name="dob" -->
+          <!-- placeholder="Enter your date of birth" required> -->
         </div>
         <!-- Gender -->
         <div class="mb-3">
@@ -118,6 +123,22 @@
 
 </body>
 <script>
+
+  const today = new Date();
+  const maxDate = new Date(today.getFullYear(), today.getMonth() - 6, today.getDate());
+  // Compute date exactly 18 years ago; DOB must be ON or BEFORE this date
+  const eighteenYearsAgo = new Date(today);
+  eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
+  const minDate = new Date(1900, 0, 1); // Arbitrary earliest allowed DOB
+  $("#datepicker").datepicker({
+    dateFormat: "dd/mm/yy",
+    changeMonth: true,
+    changeYear: true,
+    yearRange: minDate.getFullYear() + ":" + eighteenYearsAgo.getFullYear(),
+    minDate: minDate,
+    maxDate: eighteenYearsAgo
+  });
+
   const form = document.querySelector('form');
   const submitBtn = form.querySelector('button[type="submit"]');
 
