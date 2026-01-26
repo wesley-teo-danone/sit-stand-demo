@@ -136,15 +136,17 @@
                         <option value="aptamil">Aptamil</option>
                         <option value="souvenaid">Souvenaid</option>
                         <option value="fortimel">Fortimel</option>
+                        <option value="others">Others</option>
                     </select>
                 </div>
             </div>
 
             <!-- frequency of product usage -->
-            <div class="mb-3">
-                <label for="productFrequency" class="form-label">If yes, how often do you use these products?</label>
+            <div class="mb-3" id="productFrequencyGroup" style="display:none;">
+                <label for="productFrequency" class="form-label">If using a Danone product, how often do you use
+                    them?</label>
                 <div>
-                    <select class="form-select" id="productFrequency" name="productFrequency" required>
+                    <select class="form-select" id="productFrequency" name="productFrequency">
                         <option value="" selected disabled>Select an option</option>
                         <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
@@ -159,17 +161,41 @@
         <script>
             const form = document.querySelector('form');
             const submitBtn = form.querySelector('button[type="submit"]');
+            const danoneSelect = document.getElementById('danoneProducts');
+            const freqGroup = document.getElementById('productFrequencyGroup');
+            const freqSelect = document.getElementById('productFrequency');
+
+            function updateFrequencyVisibility() {
+                const value = danoneSelect.value;
+                if (value && value !== 'others') {
+                    freqGroup.style.display = '';
+                    freqSelect.required = true;
+                } else {
+                    freqGroup.style.display = 'none';
+                    freqSelect.value = '';
+                    freqSelect.required = false;
+                }
+            }
 
             function checkFormValidity() {
+                // If frequency is hidden, clear its value so form validity is correct
+                if (freqGroup.style.display === 'none') {
+                    freqSelect.value = '';
+                }
                 submitBtn.disabled = !form.checkValidity();
             }
 
             // Initial state
             submitBtn.disabled = true;
+            updateFrequencyVisibility();
 
             // Listen for input changes
             form.addEventListener('input', checkFormValidity);
             form.addEventListener('change', checkFormValidity);
+            danoneSelect.addEventListener('change', function () {
+                updateFrequencyVisibility();
+                checkFormValidity();
+            });
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
                 const formData = new FormData(form);
