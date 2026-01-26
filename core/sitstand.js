@@ -506,30 +506,36 @@ const SitStand = (() => {
     }
 
     if (remaining <= 0) {
-      endSession('timeup');
+      endSession("timeup");
     }
   }
 
-  async function endSession(reason = 'timeup') {
+  async function endSession(reason = "timeup") {
     // 1) Stop timers / telemetry
     stopSessionTimer();
     telemStop(performance.now());
     const summary = buildResultsSummary();
-    telemSetResults(summary);
+    telemSetResults(
+      summary,
+      kneescore_arr,
+      backScore_arr,
+      depth_arr,
+      symmetry_arr
+    );
     timedCoachReset();
 
     let jsonFile = null;
     try {
       jsonFile = buildSlideJSONBlob();
     } catch (e) {
-      console.error('[endSession] buildSlideJSONBlob failed:', e);
+      console.error("[endSession] buildSlideJSONBlob failed:", e);
     }
 
     let videoResult = null;
     try {
-      videoResult = await stopSessionRecording(reason || 'timeup');
+      videoResult = await stopSessionRecording(reason || "timeup");
     } catch (e) {
-      console.error('[endSession] stopSessionRecording failed:', e);
+      console.error("[endSession] stopSessionRecording failed:", e);
     }
 
     // try {
@@ -589,30 +595,30 @@ const SitStand = (() => {
     const fullrepcounter = fullrepCount;
     const partialRepcounter = partialrepCount;
 
-    const kneeAvg = mean(kneescore_arr); // out of 30
-    const depthAvg = mean(depth_arr); // out of 30
-    const symAvg = mean(symmetry_arr); // out of 20
-    const backAvg = mean(backScore_arr); // out of 20
+    // const kneeAvg = mean(kneescore_arr); // out of 30
+    // const depthAvg = mean(depth_arr); // out of 30
+    // const symAvg = mean(symmetry_arr); // out of 20
+    // const backAvg = mean(backScore_arr); // out of 20
 
-    // As percents of max (what you asked to display)
-    const kneePct = pctOfMax(kneeAvg, 30);
-    const depthPct = pctOfMax(depthAvg, 30);
-    const symPct = pctOfMax(symAvg, 20);
-    const backPct = pctOfMax(backAvg, 20);
+    // // As percents of max (what you asked to display)
+    // const kneePct = pctOfMax(kneeAvg, 30);
+    // const depthPct = pctOfMax(depthAvg, 30);
+    // const symPct = pctOfMax(symAvg, 20);
+    // const backPct = pctOfMax(backAvg, 20);
 
-    // Overall (0..100) — either mean of totals or sum of per-metric means (equivalent)
-    const overallAvg = kneeAvg + depthAvg + symAvg + backAvg; // out of 100
-    const overallPct = overallAvg; // already out of 100
+    // // Overall (0..100) — either mean of totals or sum of per-metric means (equivalent)
+    // const overallAvg = kneeAvg + depthAvg + symAvg + backAvg; // out of 100
+    // const overallPct = overallAvg; // already out of 100
 
     return {
       reps,
       fullrepcounter,
-      partialRepcounter,
-      knee: { avg: kneeAvg, pct: kneePct, max: 30 },
-      depth: { avg: depthAvg, pct: depthPct, max: 30 },
-      symmetry: { avg: symAvg, pct: symPct, max: 20 },
-      back: { avg: backAvg, pct: backPct, max: 20 },
-      overall: { avg: overallAvg, pct: overallPct, max: 100 }
+      partialRepcounter
+      // knee: { avg: kneeAvg, pct: kneePct, max: 30 },
+      // depth: { avg: depthAvg, pct: depthPct, max: 30 },
+      // symmetry: { avg: symAvg, pct: symPct, max: 20 },
+      // back: { avg: backAvg, pct: backPct, max: 20 },
+      // overall: { avg: overallAvg, pct: overallPct, max: 100 }
     };
   }
 
