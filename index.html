@@ -83,15 +83,15 @@
           <label class="form-label fw-semibold">Gender</label>
           <div class="landing-radio-group">
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="gender" id="genderMale" value="male" required>
+              <input class="form-check-input" type="radio" name="gender" id="genderMale" value="M" required>
               <label class="form-check-label" for="genderMale">Male</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="female" required>
+              <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="F" required>
               <label class="form-check-label" for="genderFemale">Female</label>
             </div>
             <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="gender" id="genderOther" value="other" required>
+              <input class="form-check-input" type="radio" name="gender" id="genderOther" value="O" required>
               <label class="form-check-label" for="genderOther">Other</label>
             </div>
           </div>
@@ -110,8 +110,8 @@
         </div>
         <!-- Privacy Policy checkbox -->
         <div class="mb-2 d-flex flex-row align-items-center gap-2">
-          <input class="form-check-input" type="checkbox" id="privacyPolicy" name="privacyPolicy" required>
-          <label class="form-check-label" for="privacyPolicy">
+          <input class="form-check-input" type="checkbox" id="consent" name="consent" required>
+          <label class="form-check-label" for="consent">
             I agree that Danone may use the data collected for scientific research purposes​
           </label>
         </div>
@@ -157,7 +157,13 @@
     const formData = new FormData(form);
     const data = {};
     for (const [key, value] of formData.entries()) {
-      data[key] = value;
+      if (key === 'consent') {
+        data[key] = form.querySelector('[name="consent"]').checked;
+      } else if (key === 'weight' || key === 'height') {
+        data[key] = parseInt(value, 10);
+      } else {
+        data[key] = value;
+      }
     }
     localStorage.setItem('profile-data', JSON.stringify(data));
     window.location.href = 'guide.html';

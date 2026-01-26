@@ -193,11 +193,28 @@
         </div>
 </body>
 <script src="scoring.js"></script>
-<script>
+<script type="module">
+    const profileData = JSON.parse(localStorage.getItem('profile-data'));
+    const malnutritionForm = JSON.parse(localStorage.getItem('malnutrition-form'));
+    const sitStandSummary = JSON.parse(localStorage.getItem('sit-stand-summary'));
+    let res = null;
+    console.log('Profile Data:', profileData);
+    console.log('Malnutrition Form Data:', malnutritionForm);
+    console.log('Sit-Stand Summary Data:', sitStandSummary);
+    try {
+        res = await callStsApi(profileData, malnutritionForm, sitStandSummary);
+        console.log('Sit-to-Stand API Response:', res);
+    } catch (error) {
+        console.error('Error calling Sit-to-Stand API:', error);
+    }
     async function displayRiskScores() {
         try {
-            const { reps: fallReps, performanceCategory: fallRiskScore } = getFallRiskScore(); // Low, Moderate, High
-            const { score: malnutritionRiskScore, category: malnutritionRiskCategory } = getMalnutritionRiskScore(); //Score is 1 - 5
+            const fallReps = sitStandSummary.reps;
+            const fallRiskScore = res.performance_category;
+            const malnutritionRiskScore = res.malnutrition_score;
+            const malnutritionRiskCategory = res.malnutrition_risk;
+            // const { reps: fallReps, performanceCategory: fallRiskScore } = getFallRiskScore(); // Low, Moderate, High
+            // const { score: malnutritionRiskScore, category: malnutritionRiskCategory } = getMalnutritionRiskScore(); //Score is 1 - 5
             console.log(fallReps, fallRiskScore, malnutritionRiskScore, malnutritionRiskCategory);
 
             if (fallReps != null) {

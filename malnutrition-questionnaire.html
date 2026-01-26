@@ -56,11 +56,12 @@
                     months?</label>
                 <select class="form-select" id="weightLoss" name="weightLoss" required>
                     <option value="" selected disabled>Select an option</option>
-                    <option value="no">No (or less than 1kg)</option>
-                    <option value="1-5">Yes – 1 to 5 kg</option>
-                    <option value="6-10">Yes – 6 to 10 kg</option>
-                    <option value="11-15">Yes – 11 to 15 kg</option>
-                    <option value="15plus">Yes – More than 15 kg</option>
+                    <option value="none_or_lt_1kg">No (or less than 1kg)</option>
+                    <option value="kg_1_5">Yes – 1 to 5 kg</option>
+                    <option value="kg_6_10">Yes – 6 to 10 kg</option>
+                    <option value="kg_11_15">Yes – 11 to 15 kg</option>
+                    <option value="kg_gt_15">Yes – More than 15 kg</option>
+                    <option value="unsure">Unsure</option>
                 </select>
             </div>
 
@@ -69,19 +70,14 @@
                 <label for="appetite" class="form-label">Has your appetite decreased recently?</label>
                 <div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="appetite" id="appetiteYes" value="yes"
+                        <input class="form-check-input" type="radio" name="appetite" id="appetiteYes" value="true"
                             required>
                         <label class="form-check-label" for="appetiteYes">Yes</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="appetite" id="appetiteNo" value="no"
+                        <input class="form-check-input" type="radio" name="appetite" id="appetiteNo" value="false"
                             required>
                         <label class="form-check-label" for="appetiteNo">No</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="appetite" id="appetiteUnsure" value="unsure"
-                            required>
-                        <label class="form-check-label" for="appetiteUnsure">Unsure</label>
                     </div>
                 </div>
             </div>
@@ -201,9 +197,13 @@
                 const formData = new FormData(form);
                 const data = {};
                 for (const [key, value] of formData.entries()) {
-                    data[key] = value;
+                    if (key === 'appetite') {
+                        data[key] = value === 'true';
+                    } else {
+                        data[key] = value;
+                    }
                 }
-                localStorage.setItem('malnutritionForm', JSON.stringify(data));
+                localStorage.setItem('malnutrition-form', JSON.stringify(data));
                 window.location.href = 'results.html';
             });
         </script>
