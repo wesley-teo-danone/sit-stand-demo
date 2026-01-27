@@ -17,22 +17,85 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
             padding: 1rem;
+            min-height: 100vh;
         }
 
-        .container {
-            width: 90%;
-            max-width: 900px;
+        .page-section {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-subheader {
+            text-align: center;
+            font-size: clamp(14px, 2.5vw, 18px);
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-container {
+            width: 100%;
             background: #fff;
             border-radius: 30px;
             box-shadow: 0 28px 80px rgba(50, 71, 194, 0.18);
             border: 1px solid rgba(255, 255, 255, 0.65);
-            padding: clamp(1.5rem, 4vw, 3rem) clamp(1.5rem, 6vw, 10rem);
+            padding: clamp(1.5rem, 5vw, 3rem);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .question-group {
+            margin-bottom: 1rem;
+        }
+
+        .question-group:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            font-size: clamp(14px, 2.2vw, 16px);
+            margin-bottom: 0.5rem;
+        }
+
+        .action-button {
+            width: 100%;
+            max-width: 300px;
+            margin: 1.5rem auto 0;
+        }
+
+        /* Radio button styling */
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .form-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .page-section {
+                max-width: 900px;
+            }
         }
     </style>
 </head>
@@ -43,17 +106,22 @@
             <img src="assets/logo.svg" alt="Danone Logo" />
         </a>
     </header>
-    <!-- Headers -->
-    <h1 class="header text-center">Malnutrition Screening Questionnaire</h1>
-    <div class="text-center">
-        Answer these questions to get a better understanding of your nutritional status.
-    </div>
-    <div class="container">
-        <form>
-            <!-- unintentional weight loss in the last 6 months -->
-            <div class="mb-3">
-                <label for="weightLoss" class="form-label">Have you experienced unintentional weight loss in the last 6
-                    months?</label>
+
+    <!-- Part 1: Initial Questions -->
+    <div id="part1" class="page-section">
+        <div class="section-header">
+            <h1 class="header mb-2">Malnutrition Screening Questionnaire</h1>
+            <p class="section-subheader">
+                Answer these questions to get a better understanding of your nutritional status.
+            </p>
+        </div>
+
+        <div class="form-container">
+            <!-- Unintentional weight loss -->
+            <div class="question-group">
+                <label for="weightLoss" class="form-label">
+                    Have you experienced unintentional weight loss in the last 6 months?
+                </label>
                 <select class="form-select" id="weightLoss" name="weightLoss" required>
                     <option value="" selected disabled>Select an option</option>
                     <option value="none_or_lt_1kg">No (or less than 1kg)</option>
@@ -65,16 +133,16 @@
                 </select>
             </div>
 
-            <!-- appetite decrease -->
-            <div class="mb-3">
-                <label for="appetite" class="form-label">Has your appetite decreased recently?</label>
-                <div>
-                    <div class="form-check form-check-inline">
+            <!-- Appetite decrease -->
+            <div class="question-group">
+                <label class="form-label">Has your appetite decreased recently?</label>
+                <div class="radio-group">
+                    <div class="form-check">
                         <input class="form-check-input" type="radio" name="appetite" id="appetiteYes" value="true"
                             required>
                         <label class="form-check-label" for="appetiteYes">Yes</label>
                     </div>
-                    <div class="form-check form-check-inline">
+                    <div class="form-check">
                         <input class="form-check-input" type="radio" name="appetite" id="appetiteNo" value="false"
                             required>
                         <label class="form-check-label" for="appetiteNo">No</label>
@@ -82,12 +150,30 @@
                 </div>
             </div>
 
-            <!-- diagnosed diseases or chronic conditions -->
-            <div class="mb-3">
-                <label for="diseases" class="form-label">Do you have any diagnosed diseases or chronic
-                    conditions?</label>
-                <div>
-                    <select class="form-select" id="diseases" name="diseases" required>
+            <!-- Next Button -->
+            <button type="button" id="nextBtn" class="btn action-button" disabled>
+                Next
+            </button>
+        </div>
+    </div>
+
+    <!-- Part 2: Additional Questions (Hidden Initially) -->
+    <div id="part2" class="page-section" style="display: none;">
+        <div class="section-header">
+            <h1 class="header mb-2">Almost Done!</h1>
+            <p class="section-subheader">
+                Help us understand your health better with a few more optional details.
+            </p>
+        </div>
+
+        <form id="malnutritionForm">
+            <div class="form-container">
+                <!-- Diagnosed diseases or chronic conditions -->
+                <div class="question-group">
+                    <label for="diseases" class="form-label">
+                        Do you have any diagnosed diseases or chronic conditions?
+                    </label>
+                    <select class="form-select" id="diseases" name="diseases">
                         <option value="" selected disabled>Select an option</option>
                         <option value="none">No existing conditions</option>
                         <option value="cancer">Cancer</option>
@@ -102,14 +188,13 @@
                         <option value="other">Other</option>
                     </select>
                 </div>
-            </div>
 
-            <!-- experienced any changes recently -->
-            <div class="mb-3">
-                <label for="changes" class="form-label">Have you experienced any of the following changes
-                    recently?</label>
-                <div>
-                    <select class="form-select" id="changes" name="changes" required>
+                <!-- Recent changes -->
+                <div class="question-group">
+                    <label for="changes" class="form-label">
+                        Have you experienced any of the following changes recently?
+                    </label>
+                    <select class="form-select" id="changes" name="changes">
                         <option value="" selected disabled>Select an option</option>
                         <option value="none">No recent medical history</option>
                         <option value="hospitalization">Hospitalization</option>
@@ -120,14 +205,13 @@
                         <option value="medication">Use of drugs/medication</option>
                     </select>
                 </div>
-            </div>
 
-            <!-- danone products used -->
-            <div class="mb-3">
-                <label for="danoneProducts" class="form-label">Do you currently use any Danone medical
-                    nutrition products?</label>
-                <div>
-                    <select class="form-select" id="danoneProducts" name="danoneProducts" required>
+                <!-- Danone products -->
+                <div class="question-group">
+                    <label for="danoneProducts" class="form-label">
+                        Do you currently use any Danone medical nutrition products?
+                    </label>
+                    <select class="form-select" id="danoneProducts" name="danoneProducts">
                         <option value="" selected disabled>Select an option</option>
                         <option value="aptamil">Aptamil</option>
                         <option value="souvenaid">Souvenaid</option>
@@ -135,13 +219,12 @@
                         <option value="others">Others</option>
                     </select>
                 </div>
-            </div>
 
-            <!-- frequency of product usage -->
-            <div class="mb-3" id="productFrequencyGroup" style="display:none;">
-                <label for="productFrequency" class="form-label">If using a Danone product, how often do you use
-                    them?</label>
-                <div>
+                <!-- Product frequency -->
+                <div class="question-group" id="productFrequencyGroup" style="display: none;">
+                    <label for="productFrequency" class="form-label">
+                        If using a Danone product, how often do you use them?
+                    </label>
                     <select class="form-select" id="productFrequency" name="productFrequency">
                         <option value="" selected disabled>Select an option</option>
                         <option value="daily">Daily</option>
@@ -150,63 +233,102 @@
                         <option value="occasionally">Occasionally</option>
                     </select>
                 </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn action-button">
+                    See My Overview
+                </button>
             </div>
-
-            <button type="submit" class="btn w-100">See My Overview</button>
         </form>
-        <script>
-            const form = document.querySelector('form');
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const danoneSelect = document.getElementById('danoneProducts');
-            const freqGroup = document.getElementById('productFrequencyGroup');
-            const freqSelect = document.getElementById('productFrequency');
+    </div>
+    <script>
+        // ====================================
+        // DOM Element References
+        // ====================================
+        const part1 = document.getElementById('part1');
+        const part2 = document.getElementById('part2');
+        const nextBtn = document.getElementById('nextBtn');
+        const weightLossSelect = document.getElementById('weightLoss');
+        const appetiteRadios = document.querySelectorAll('input[name="appetite"]');
+        const form = document.getElementById('malnutritionForm');
+        const danoneSelect = document.getElementById('danoneProducts');
+        const freqGroup = document.getElementById('productFrequencyGroup');
+        const freqSelect = document.getElementById('productFrequency');
 
-            function updateFrequencyVisibility() {
-                const value = danoneSelect.value;
-                if (value && value !== 'others') {
-                    freqGroup.style.display = '';
-                    freqSelect.required = true;
-                } else {
-                    freqGroup.style.display = 'none';
-                    freqSelect.value = '';
-                    freqSelect.required = false;
-                }
+        // ====================================
+        // State Management
+        // ====================================
+        let part1Data = {};
+
+        // ====================================
+        // Part 1 Validation
+        // ====================================
+        function checkPart1Validity() {
+            const weightLossFilled = weightLossSelect.value !== '';
+            const appetiteChecked = Array.from(appetiteRadios).some(radio => radio.checked);
+            nextBtn.disabled = !(weightLossFilled && appetiteChecked);
+        }
+
+        function handleNextClick() {
+            // Save part 1 data
+            part1Data = {
+                weightLoss: weightLossSelect.value,
+                appetite: Array.from(appetiteRadios).find(r => r.checked)?.value === 'true'
+            };
+
+            // Transition to part 2
+            part1.style.display = 'none';
+            part2.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ====================================
+        // Part 2 Logic
+        // ====================================
+        function updateFrequencyVisibility() {
+            const value = danoneSelect.value;
+            if (value && value !== 'others') {
+                freqGroup.style.display = '';
+                freqSelect.required = false;
+            } else {
+                freqGroup.style.display = 'none';
+                freqSelect.value = '';
+                freqSelect.required = false;
+            }
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const data = { ...part1Data };
+
+            // Add part 2 data
+            for (const [key, value] of formData.entries()) {
+                data[key] = value;
             }
 
-            function checkFormValidity() {
-                // If frequency is hidden, clear its value so form validity is correct
-                if (freqGroup.style.display === 'none') {
-                    freqSelect.value = '';
-                }
-                submitBtn.disabled = !form.checkValidity();
-            }
+            localStorage.setItem('malnutrition-form', JSON.stringify(data));
+            window.location.href = 'results.html';
+        }
 
-            // Initial state
-            submitBtn.disabled = true;
-            updateFrequencyVisibility();
+        // ====================================
+        // Event Listeners
+        // ====================================
+        weightLossSelect.addEventListener('change', checkPart1Validity);
+        appetiteRadios.forEach(radio => {
+            radio.addEventListener('change', checkPart1Validity);
+        });
+        nextBtn.addEventListener('click', handleNextClick);
+        danoneSelect.addEventListener('change', updateFrequencyVisibility);
+        form.addEventListener('submit', handleFormSubmit);
 
-            // Listen for input changes
-            form.addEventListener('input', checkFormValidity);
-            form.addEventListener('change', checkFormValidity);
-            danoneSelect.addEventListener('change', function () {
-                updateFrequencyVisibility();
-                checkFormValidity();
-            });
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                const formData = new FormData(form);
-                const data = {};
-                for (const [key, value] of formData.entries()) {
-                    if (key === 'appetite') {
-                        data[key] = value === 'true';
-                    } else {
-                        data[key] = value;
-                    }
-                }
-                localStorage.setItem('malnutrition-form', JSON.stringify(data));
-                window.location.href = 'results.html';
-            });
-        </script>
+        // ====================================
+        // Initialization
+        // ====================================
+        checkPart1Validity();
+        updateFrequencyVisibility();
+    </script>
 </body>
 
 </html>

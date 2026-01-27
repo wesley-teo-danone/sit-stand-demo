@@ -3,7 +3,16 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" <div class="page-content">
+  <img src="assets/sit_stand_icon.png" alt="Sit2Scan" class="logo-image">
+
+  <div class="header text-center">Sit2Scan</div>
+
+  <div class="intro-text">
+    Stay active for what you love! Take a quick test to check your strength and nutrition.
+    Your strength will be checked with a quick chair stand test using your phone's front camera. We only need a few
+    details to personalize your results.
+  </div>="width=device-width, initial-scale=1.0">
   <meta name="description"
     content="Introduction to the Sit-To-Stand tool with instructions for use and data collection." />
   <!-- jQuery and jQuery UI for datepicker -->
@@ -20,7 +29,27 @@
   <link href="styles.css" rel="stylesheet">
   <title>Sit2Scan</title>
   <style>
-    .container {
+    .page-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+    }
+
+    .logo-image {
+      width: clamp(50%, 360px, 80%);
+      height: auto;
+    }
+
+    .intro-text {
+      width: 90%;
+      max-width: 900px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .form-container {
       width: 90%;
       max-width: 900px;
       background: #fff;
@@ -49,6 +78,14 @@
       gap: 0.5rem;
       margin: 0;
     }
+
+    .consent-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 
@@ -61,23 +98,21 @@
 
   <div class="d-flex flex-column align-items-center justify-content-between px-2">
     <!-- Headers -->
-    <img src="assets/sit_stand_icon.png" alt="Sit2Scan" style="width: 240px; height: auto;">
+    <img src="assets/sit_stand_icon.png" alt="Sit2Scan" style="width: clamp(50%, 360px ,80%); height: auto;">
     <div class="header text-center">Sit2Scan</div>
-    <div class="text-center">Stay active for what you love! Take a quick test to check your strength and nutrition.
-    </div>
-    <div class="text-center ">Your strength will be checked with a quick chair stand test using your
-      phone’s front camera.<br>We only need a few details to personalize your results</div>
+    <div style="width: 90%; max-width: 900px; font-size: 18px; text-align: center;">
+      Stay active for what you love! Take a quick test to check your strength and nutrition.
+      Your strength will be checked with a quick chair stand test using your
+      phone’s front camera. We only need a few details to personalize your results. </div>
 
-    <div class="container">
-      <form>
-        <!-- Age -->
+    <div class="form-container">
+      <form id="profileForm">
+        <!-- Date of Birth -->
         <div class="mb-3">
-          <label for="dob" class="form-label fw-semibold">Date of Birth</label>
+          <label for="datepicker" class="form-label fw-semibold">Date of Birth</label>
           <input class="form-control" id="datepicker" name="dob" type="text" placeholder="DD/MM/YYYY" required readonly>
-
-          <!-- <input type="date" class="form-control form-control-md" id="dob" name="dob" -->
-          <!-- placeholder="Enter your date of birth" required> -->
         </div>
+
         <!-- Gender -->
         <div class="mb-3">
           <label class="form-label fw-semibold">Gender</label>
@@ -90,26 +125,25 @@
               <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="F" required>
               <label class="form-check-label" for="genderFemale">Female</label>
             </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="gender" id="genderOther" value="O" required>
-              <label class="form-check-label" for="genderOther">Other</label>
-            </div>
           </div>
         </div>
+
         <!-- Weight -->
         <div class="mb-3">
           <label for="weight" class="form-label fw-semibold">Weight (kg)</label>
           <input type="number" class="form-control form-control-md" id="weight" name="weight"
             placeholder="Enter your weight" required>
         </div>
+
         <!-- Height -->
         <div class="mb-4">
           <label for="height" class="form-label fw-semibold">Height (cm)</label>
           <input type="number" class="form-control form-control-md" id="height" name="height"
             placeholder="Enter your height" required>
         </div>
+
         <!-- Privacy Policy checkbox -->
-        <div class="mb-2 d-flex flex-row align-items-center gap-2">
+        <div class="consent-wrapper">
           <input class="form-check-input" type="checkbox" id="consent" name="consent" required>
           <label class="form-check-label" for="consent">
             I agree that Danone may use the data collected for scientific research purposes​
@@ -120,42 +154,37 @@
       </form>
     </div>
   </div>
-
 </body>
 <script>
-
+  // ===== Date Picker Configuration =====
   const today = new Date();
-  const maxDate = new Date(today.getFullYear(), today.getMonth() - 6, today.getDate());
-  // Compute date exactly 18 years ago; DOB must be ON or BEFORE this date
   const eighteenYearsAgo = new Date(today);
   eighteenYearsAgo.setFullYear(eighteenYearsAgo.getFullYear() - 18);
-  const minDate = new Date(1900, 0, 1); // Arbitrary earliest allowed DOB
+  const minDate = new Date(1900, 0, 1);
+
   $("#datepicker").datepicker({
     dateFormat: "dd/mm/yy",
     changeMonth: true,
     changeYear: true,
-    yearRange: minDate.getFullYear() + ":" + eighteenYearsAgo.getFullYear(),
+    yearRange: `${minDate.getFullYear()}:${eighteenYearsAgo.getFullYear()}`,
     minDate: minDate,
     maxDate: eighteenYearsAgo
   });
 
-  const form = document.querySelector('form');
+  // ===== Form Validation and Submission =====
+  const form = document.getElementById('profileForm');
   const submitBtn = form.querySelector('button[type="submit"]');
 
   function checkFormValidity() {
     submitBtn.disabled = !form.checkValidity();
   }
 
-  // Initial state
-  checkFormValidity();
-
-  // Listen for input changes
-  form.addEventListener('input', checkFormValidity);
-  form.addEventListener('change', checkFormValidity);
-  form.addEventListener('submit', function (event) {
+  function handleFormSubmit(event) {
     event.preventDefault();
+
     const formData = new FormData(form);
     const data = {};
+
     for (const [key, value] of formData.entries()) {
       if (key === 'consent') {
         data[key] = form.querySelector('[name="consent"]').checked;
@@ -165,9 +194,16 @@
         data[key] = value;
       }
     }
+
     localStorage.setItem('profile-data', JSON.stringify(data));
     window.location.href = 'guide.html';
-  });
+  }
+
+  // ===== Event Listeners =====
+  checkFormValidity();
+  form.addEventListener('input', checkFormValidity);
+  form.addEventListener('change', checkFormValidity);
+  form.addEventListener('submit', handleFormSubmit);
 </script>
 
 </html>
