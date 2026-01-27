@@ -210,22 +210,21 @@
     async function displayRiskScores() {
         try {
             const fallReps = sitStandSummary.reps;
-            const fallRiskScore = res.performance_category;
+            const fallPerformanceCategory = res.performance_category;
+            const fallRiskCategory = res.fall_risk;
             const malnutritionRiskScore = res.malnutrition_score;
             const malnutritionRiskCategory = res.malnutrition_risk;
-            // const { reps: fallReps, performanceCategory: fallRiskScore } = getFallRiskScore(); // Low, Moderate, High
-            // const { score: malnutritionRiskScore, category: malnutritionRiskCategory } = getMalnutritionRiskScore(); //Score is 1 - 5
-            console.log(fallReps, fallRiskScore, malnutritionRiskScore, malnutritionRiskCategory);
+            console.log(fallReps, fallPerformanceCategory, fallRiskCategory, malnutritionRiskScore, malnutritionRiskCategory);
 
             if (fallReps != null) {
                 const fallScoreHeader = document.getElementById("fall-score-header-reps");
                 fallScoreHeader.textContent = fallReps;
                 const fallScoreHeaderText = document.getElementById("fall-score-header-text");
-                if (fallRiskScore == "Low") {
+                if (fallPerformanceCategory == "Low") {
                     fallScoreHeaderText.textContent = "Great job!";
-                } else if (fallRiskScore == "Moderate") {
+                } else if (fallPerformanceCategory == "Moderate") {
                     fallScoreHeaderText.textContent = "Good job!";
-                } else { // fallRiskScore == "High" / "Unknown"
+                } else { // fallPerformanceCategory == "High" / "Unknown"
                     fallScoreHeaderText.textContent = "Stay active!";
                 }
             }
@@ -233,15 +232,13 @@
             const fallScoreContainer = document.getElementById("fallScore");
             const fallScorePointer = document.getElementById("fallScore-pointer");
             fallScorePointer.style.top = "50%"; // Center vertically
-            if (fallRiskScore) {
+            if (fallRiskCategory) {
                 const FALL_MIN = 0;
                 const FALL_MAX = 100; // Use cutoff * 2 for max value
                 let value = 0;
-                if (fallRiskScore === 'Low') {
+                if (fallRiskCategory === 'No Risk') {
                     value = 25;
-                } else if (fallRiskScore === 'Moderate') {
-                    value = 50;
-                } else if (fallRiskScore === 'High') {
+                } else if (fallRiskCategory === 'At Risk') {
                     value = 75;
                 }
                 const ratio = (value - FALL_MIN) / (FALL_MAX - FALL_MIN);
