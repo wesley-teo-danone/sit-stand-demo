@@ -27,22 +27,44 @@
             text-align: center;
             margin-bottom: 2rem;
             width: 80%;
-            max-width: 560px;
-            margin-left: auto;
-            margin-right: auto;
+
+        }
+
+        .guide-images-container {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 2rem auto;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1200px;
         }
 
         .guide-image {
-            display: block;
-            margin: 0 auto 2rem auto;
-            max-width: 280px;
-            height: clamp(140px, 30vh, 280px);
             width: auto;
+            max-width: 100%;
+            height: auto;
+            max-height: 50vh;
+            flex: 0 1 auto;
             border-radius: 18px;
             box-shadow: 0 8px 32px rgba(50, 71, 194, 0.10);
             background: #fff;
-            object-fit: contain;
-            border: 4px solid #2360bc
+            border: 4px solid #2360bc;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .guide-images-container {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .guide-image {
+                max-width: 100%;
+                max-height: 40vh;
+            }
         }
     </style>
 </head>
@@ -56,7 +78,7 @@
     <div class="guide-container" id="guideStep">
         <div class="header" id="guideHeader"></div>
         <div class="guide-content" id="topGuideText"></div>
-        <img class="guide-image" id="guideImage">
+        <div class="guide-images-container" id="guideImagesContainer"></div>
         <div class="guide-content" id="bottomGuideText"></div>
         <button class="btn" id="nextBtn">Next step</button>
     </div>
@@ -64,24 +86,25 @@
         // Guide steps data
         const steps = [
             {
-                header: 'Step 1',
-                topText: '• Put your phone on a stable table at hip height​.\n• Use the front camera and make sure your whole body is visible in the screen.\n• Use strong chair without armrests or wheels​',
+                header: 'Step 1 - Set up the space and camera',
+
+                topText: '• Place a stable chair on a flat surface, with enough space around it to stand up and sit down safely.\n• Position your phone on a stable surface (table, shelf, or tripod) at approximately hip height.\n• Place the phone about 3 meters away from the chair.\n• The chair should be in front of the phone but slightly angled like on the picture below \n• Make sure the phone is stable and does not move during the test. \n• Ensure the room is well lit and that only you are visible on the screen.​',
                 bottomText: 'No armless chair? Use a safe chair for sitting and standing',
-                img: './assets/guide_1.png',
+                img: ['./assets/guide_1_side.jpeg', './assets/guide_1_top.jpeg'],
                 imgAlt: 'Prepare Space'
             },
             {
-                header: 'Step 2',
-                topText: '• Sit on the chair​\n• Cross your arms on your chest ​\n• Keep your back straight and feet flat',
+                header: 'Step 2 - Starting position',
+                topText: '• Sit upright on the chair, with your back straight.​\n• Place your feet flat on the floor, shoulder width apart​.\n• Cross your arms over your chest.\n• Stay still in this position until the test begins.',
                 bottomText: 'This position helps measure your strength accurately',
-                img: './assets/guide_2.png',
+                img: ['./assets/guide_2.jpeg'],
                 imgAlt: 'Perform Test'
             },
             {
-                header: 'Step 3',
-                topText: 'At “Go”, stand up and sit down as many times as you can in 30 seconds. Keep arms crossed—don’t use them to help.',
+                header: 'Step 3 - Perform the test',
+                topText: '​• Make sure your full body is visible on the camera view.\n• When you are ready, press “Start” on the phone.\n• A countdown will begin.\n• After “Go”, stand up fully and sit back down.\n• Continue until the 30 seconds countdown ends.\n• Keep your arms crossed over your chest throughout the test.',
                 bottomText: 'Stop if you feel dizzy or unsafe. This measures your leg strength.',
-                img: './assets/guide_3.png',
+                img: ['./assets/guide_3_sit.jpeg', '/assets/guide_3_stand.jpeg'],
                 imgAlt: 'Perform Test'
             }
         ];
@@ -89,35 +112,43 @@
         const guideHeader = document.getElementById('guideHeader');
         const guideTopText = document.getElementById('topGuideText');
         const guideBottomText = document.getElementById('bottomGuideText');
-        const guideImage = document.getElementById('guideImage');
+        const guideImagesContainer = document.getElementById('guideImagesContainer');
         const nextBtn = document.getElementById('nextBtn');
+
+        // Function to render images
+        function renderImages(imgArray, altText) {
+            guideImagesContainer.innerHTML = '';
+            imgArray.forEach((imgSrc, index) => {
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.alt = `${altText} ${index + 1}`;
+                img.className = 'guide-image';
+                guideImagesContainer.appendChild(img);
+            });
+        }
+
+        // Function to update step content
+        function updateStep(stepIndex) {
+            guideHeader.textContent = steps[stepIndex].header;
+            guideTopText.innerHTML = steps[stepIndex].topText
+                .replace(/\n/g, "<br>")
+                .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+            guideBottomText.innerHTML = steps[stepIndex].bottomText
+                .replace(/\n/g, "<br>")
+                .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+            renderImages(steps[stepIndex].img, steps[stepIndex].imgAlt);
+        }
+
         // Initialize first step
-        guideHeader.textContent = steps[currentStep].header;
-        guideTopText.innerHTML = steps[currentStep].topText
-            .replace(/\n/g, "<br>")
-            .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-        guideBottomText.innerHTML = steps[currentStep].bottomText
-            .replace(/\n/g, "<br>")
-            .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-        guideImage.src = steps[currentStep].img;
-        guideImage.alt = steps[currentStep].imgAlt;
+        updateStep(currentStep);
         nextBtn.addEventListener('click', function () {
             currentStep++;
             if (currentStep < steps.length) {
-                guideHeader.textContent = steps[currentStep].header;
-                guideTopText.innerHTML = steps[currentStep].topText
-                    .replace(/\n/g, "<br>")
-                    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-                guideBottomText.innerHTML = steps[currentStep].bottomText
-                    .replace(/\n/g, "<br>")
-                    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-                guideImage.src = steps[currentStep].img;
-                guideImage.alt = steps[currentStep].imgAlt;
+                updateStep(currentStep);
                 if (currentStep === steps.length - 1) {
                     nextBtn.textContent = 'Start scanning';
                 }
             } else {
-                // window.location.href = 'camera.html';
                 window.location.href = 'sit-stand-camera.html';
             }
         });
