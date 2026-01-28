@@ -17,9 +17,9 @@ function getAgeFromDob(dob) {
 }
 
 const fallPerformanceCategoryContent = {
-  low: 'Below recommended level, indicating possible lower muscle weakness',
-  moderate: '“Within normal range for your age group” ',
-  high: 'Above average lower-body strength and endurance for your age group',
+  Low: 'Below recommended level, indicating possible lower muscle weakness',
+  Moderate: '“Within normal range for your age group” ',
+  High: 'Above average lower-body strength and endurance for your age group',
 };
 
 const fallRiskContent = {
@@ -30,10 +30,10 @@ const fallRiskContent = {
 };
 
 const malnutritionRiskContent = {
-  low: 'Your malnutrition risk appears low — your current nutrition seems sufficient to support daily activities.',
-  moderate:
+  Low: 'Your malnutrition risk appears low — your current nutrition seems sufficient to support daily activities.',
+  Moderate:
     'Your malnutrition risk appears moderate — this may reflect early signs of reduced food or protein intake.',
-  high: 'Your malnutrition risk appears moderate — this may reflect early signs of reduced food or protein intake.',
+  High: 'Your malnutrition risk appears high — this may reflect early signs of reduced food or protein intake.',
 };
 
 async function callStsApi(profileData, malnutritionForm, sitStandSummary) {

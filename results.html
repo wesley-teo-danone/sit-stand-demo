@@ -64,8 +64,8 @@
 
         .score-meter__visual {
             display: flex;
-            align-items: center;
-            gap: 1.2rem;
+            flex-direction: column;
+            align-items: stretch;
             width: 100%;
         }
 
@@ -129,6 +129,29 @@
             transform: rotate(45deg);
             border-radius: 2px;
         }
+
+        .score-meter__divider {
+            position: absolute;
+            top: -5px;
+            bottom: -5px;
+            width: 2px;
+            border-left: 2px dotted rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .score-meter__labels {
+            display: flex;
+            width: 100%;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #555;
+        }
+
+        .score-meter__label-section {
+            flex: 1;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -160,9 +183,14 @@
                 <div class="score-meter__visual">
                     <div class="score-meter__bar">
                         <div class="score-meter__gradient"></div>
+                        <div class="score-meter__divider" style="left: 50%;"></div>
                         <div class="score-meter__pointer" id="fallScore-pointer" aria-hidden="true">
                             <span class="score-meter__pointer-diamond"></span>
                         </div>
+                    </div>
+                    <div class="score-meter__labels">
+                        <div class="score-meter__label-section">AT RISK</div>
+                        <div class="score-meter__label-section">NOT AT RISK</div>
                     </div>
                 </div>
             </div>
@@ -174,9 +202,16 @@
                 <div class="score-meter__visual">
                     <div class="score-meter__bar">
                         <div class="score-meter__gradient"></div>
+                        <div class="score-meter__divider" style="left: 33.33%;"></div>
+                        <div class="score-meter__divider" style="left: 66.67%;"></div>
                         <div class="score-meter__pointer" id="malnutritionScore-pointer" aria-hidden="true">
                             <span class="score-meter__pointer-diamond"></span>
                         </div>
+                    </div>
+                    <div class="score-meter__labels">
+                        <div class="score-meter__label-section">HIGH RISK</div>
+                        <div class="score-meter__label-section">MODERATE RISK</div>
+                        <div class="score-meter__label-section">LOW RISK</div>
                     </div>
                 </div>
             </div>
@@ -231,13 +266,13 @@
                 const fallScoreHeaderText = document.getElementById("fall-score-header-text");
                 const fallScoreSubheaderText = document.getElementById("fall-score-subheader-text");
                 if (fallPerformanceCategory == "Low") {
-                    fallScoreHeaderText.textContent = fallPerformanceCategoryContent.low;
+                    fallScoreHeaderText.textContent = fallPerformanceCategoryContent.Low;
                     fallScoreSubheaderText.textContent = "Stay active!";
                 } else if (fallPerformanceCategory == "Moderate") {
-                    fallScoreHeaderText.textContent = fallPerformanceCategoryContent.moderate;
+                    fallScoreHeaderText.textContent = fallPerformanceCategoryContent.Moderate;
                     fallScoreSubheaderText.textContent = "Good job!";
                 } else { // fallPerformanceCategory == "High"
-                    fallScoreHeaderText.textContent = fallPerformanceCategoryContent.high;
+                    fallScoreHeaderText.textContent = fallPerformanceCategoryContent.High;
                     fallScoreSubheaderText.textContent = "Great job!";
                 }
             }
@@ -249,10 +284,11 @@
                 const FALL_MIN = 0;
                 const FALL_MAX = 100; // Use cutoff * 2 for max value
                 let value = 0;
-                if (fallRiskCategory === 'No Risk') {
-                    value = 25;
-                } else if (fallRiskCategory === 'At Risk') {
+                console.log('Fall Risk Category:', fallRiskCategory);
+                if (fallRiskCategory == 'No risk') {
                     value = 75;
+                } else if (fallRiskCategory == 'At risk') {
+                    value = 25;
                 }
                 const ratio = (value - FALL_MIN) / (FALL_MAX - FALL_MIN);
                 const pointerLeft = Math.max(5, ratio * 100); // Adjust for horizontal alignment
@@ -270,10 +306,15 @@
             malnutritionScorePointer.style.top = "50%"; // Center vertically
             if (malnutritionRiskScore != null) {
                 const MALNUTRITION_MIN = 0;
-                const MALNUTRITION_MAX = 5; // Use cutoff * 2 for max value
-                // Invert the ratio so higher scores are on the left
-                const ratio = 1 - ((malnutritionRiskScore - MALNUTRITION_MIN) / (MALNUTRITION_MAX - MALNUTRITION_MIN));
-                const pointerLeft = Math.min(95, ratio * 100); // Adjust for horizontal alignment
+                const MALNUTRITION_MAX = 5;
+
+                // Lower score = more to the right (better/green)
+                // Higher score = more to the left (worse/red)
+                // Score 0 (best) -> 95% right
+                // Score 5 (worst) -> 5% left
+                const ratio = malnutritionRiskScore / MALNUTRITION_MAX;
+                const pointerLeft = 95 - (ratio * 90); // Maps score 0->95%, score 5->5%
+
                 malnutritionScorePointer.style.left = `${pointerLeft}%`; // Set horizontal position
                 malnutritionScoreContainer.classList.remove("d-none");
             } else {
@@ -296,26 +337,22 @@
             }
 
             // Get the respective text content
-            const fallRiskText = fallRiskContent[fallRiskCategory] || 'No information available';
-            const malnutritionRiskText = malnutritionRiskContent[malnutritionRiskCategory?.toLowerCase()] || 'No information available';
+            const fallRiskText = fallRiskContent[fallRiskCategory]
+            const malnutritionRiskText = malnutritionRiskContent[malnutritionRiskCategory];
 
             // Format and display the content
             resultsContent.innerHTML = `
-                <div style="margin-bottom: 1.5rem;">
-                    <div style="font-weight: 600; font-size: 1.4rem; color: ${fallRiskColor}; margin-bottom: 0.5rem;">
+                <div class="mb-2">
+                    <div style="font-weight: 600; font-size: 1.4rem; color: ${fallRiskColor}; "">
                         Fall Risk: ${fallRiskCategory}
                     </div>
-                    <div style="color: #555;">
-                        ${fallRiskText}
-                    </div>
+                    <div>${fallRiskText}</div>
                 </div>
                 <div>
-                    <div style="font-weight: 600; font-size: 1.4rem; color: ${malnutritionColor}; margin-bottom: 0.5rem;">
+                    <div style="font-weight: 600; font-size: 1.4rem; color: ${malnutritionColor};">
                         Malnutrition Risk: ${malnutritionRiskCategory}
                     </div>
-                    <div style="color: #555;">
-                        ${malnutritionRiskText}
-                    </div>
+                    <div>${malnutritionRiskText}</div>
                 </div>
             `;
 
