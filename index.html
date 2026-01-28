@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description"
     content="Introduction to the Sit-To-Stand tool with instructions for use and data collection." />
   <!-- jQuery and jQuery UI for datepicker -->
@@ -19,12 +20,12 @@
   <link href="styles.css" rel="stylesheet">
   <title>Sit2Scan</title>
   <style>
-    .page-content {
+    body {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 1rem;
+      padding: 1rem;
+      min-height: 100vh;
     }
 
     .logo-image {
@@ -35,22 +36,21 @@
     .intro-text {
       width: 90%;
       max-width: 900px;
-      font-size: 18px;
+      font-size: clamp(14px, 2.5vw, 18px);
+
       text-align: center;
     }
 
     .form-container {
-      width: 90%;
-      max-width: 900px;
+      width: 100%;
       background: #fff;
       border-radius: 30px;
       box-shadow: 0 28px 80px rgba(50, 71, 194, 0.18);
       border: 1px solid rgba(255, 255, 255, 0.65);
-      padding: clamp(1.5rem, 4vw, 2rem) clamp(1.5rem, 6vw, 8rem);
+      padding: clamp(1.5rem, 5vw, 3rem);
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      gap: 1.5rem;
     }
 
     .landing-radio-group {
@@ -89,7 +89,7 @@
   <div class="d-flex flex-column align-items-center justify-content-between px-2">
     <!-- Headers -->
     <img src="assets/sit_stand_icon.png" alt="Sit2Scan" class="logo-image">
-    <div class="header text-center">Sit2Scan</div>
+    <h1 class="header text-center">Sit2Scan</h1>
     <div class="intro-text">
       Stay active for what you love! Take a quick test to check your strength and nutrition. <br>
       Your strength will be assessed using a test based on the clinically validated chair stand test, performed with
