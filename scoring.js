@@ -71,7 +71,7 @@ async function callStsApi(profileData, malnutritionForm, sitStandSummary) {
       },
     };
     const response = await fetch(
-      `https://dan-dh-api-eu.hive.digital4danone.com/adults/sit-to-stand-tracker/v1`,
+      `https://dan-dh-api-eu-uat.hive.digital4danone.com/adults/sit-to-stand-tracker/v1`,
       {
         method: 'POST',
         headers: {
