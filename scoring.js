@@ -23,7 +23,7 @@ const fallPerformanceCategoryContent = {
 };
 
 const fallRiskContent = {
-  'No risk':
+  'Not at risk':
     'Your fall risk is low — this means your muscle strength and balance are within a safe range.',
   'At risk':
     'Your fall risk appears high (below cut-off value for you age group) — this may indicate challenges with strength or balance during daily movements',
@@ -46,41 +46,52 @@ async function callStsApi(profileData, malnutritionForm, sitStandSummary) {
     if (typeof val === 'string' && val !== '') return [val];
     return [];
   }
-
-  const payload = {
-    // Compulsory fields
-    consent: profileData.consent,
-    age: getAgeFromDob(profileData.dob),
-    reps: sitStandSummary.reps,
-    full_rep_counter: sitStandSummary.fullrepcounter,
-    partial_rep_counter: sitStandSummary.partialRepcounter,
-    malnutrition_weight_loss: malnutritionForm.weightLoss,
-    malnutrition_poor_appetite: malnutritionForm.appetite,
-    // Optional fields
-    gender: profileData.gender,
-    height_cm: profileData.height,
-    weight_kg: profileData.weight,
-    medical_conditions: toArray(malnutritionForm.diseases),
-    recent_medical_history: toArray(malnutritionForm.changes),
-    product_in_use: toArray(malnutritionForm.danoneProducts),
-    product_frequency: malnutritionForm.productFrequency,
-    analysis_data: null, //TODO: add sit-stand detailed analysis data
-    additional_data: {
-      test: true,
-      description: 'Payload from sit stand demo',
-    },
-  };
-  const response = await fetch(
-    `https://dan-dh-api-eu-uat.hive.digital4danone.com/adults/sit-to-stand-tracker/v1`,
-    {
-      method: 'POST',
-      headers: {
-        dapm_key: 'DH-Tech-API-Test',
-        'Content-Type': 'application/json',
+  try {
+    const payload = {
+      // Compulsory fields
+      consent: profileData.consent,
+      age: getAgeFromDob(profileData.dob),
+      reps: sitStandSummary.reps,
+      full_rep_counter: sitStandSummary.fullrepcounter,
+      partial_rep_counter: sitStandSummary.partialRepcounter,
+      malnutrition_weight_loss: malnutritionForm.weightLoss,
+      malnutrition_poor_appetite: malnutritionForm.appetite,
+      // Optional fields
+      gender: profileData.gender,
+      height_cm: profileData.height,
+      weight_kg: profileData.weight,
+      medical_conditions: toArray(malnutritionForm.diseases),
+      recent_medical_history: toArray(malnutritionForm.changes),
+      product_in_use: toArray(malnutritionForm.danoneProducts),
+      product_frequency: malnutritionForm.productFrequency,
+      analysis_data: null, //TODO: add sit-stand detailed analysis data
+      additional_data: {
+        test: true,
+        description: 'Payload from sit stand demo',
       },
-      body: JSON.stringify(payload),
-    },
-  );
-  const res = await response.json();
-  return res;
+    };
+    const response = await fetch(
+      `https://dan-dh-api-eu.hive.digital4danone.com/adults/sit-to-stand-tracker/v1`,
+      {
+        method: 'POST',
+        headers: {
+          dapm_key: 'DH-Tech-API-Test',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      },
+    );
+    // Check if HTTP response is not OK
+    if (!response.ok) {
+      let errorMessage = `API request failed with status ${response.status}`;
+      const errorData = await response.json();
+      errorMessage += `: ${errorData.message || JSON.stringify(errorData)}`;
+      throw new Error(errorMessage);
+    }
+    const res = await response.json();
+    return res;
+  } catch (error) {
+    console.error('Error calling STS API:', error);
+    throw error;
+  }
 }

@@ -235,12 +235,13 @@
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" class="btn action-button">
+                <button type="submit" class="btn action-button" id="submitBtn">
                     See My Overview
                 </button>
             </div>
         </form>
     </div>
+    <script src="scoring.js"></script>
     <script>
         // ====================================
         // DOM Element References
@@ -297,19 +298,50 @@
             }
         }
 
-        function handleFormSubmit(e) {
+        async function handleFormSubmit(e) {
             e.preventDefault();
 
-            const formData = new FormData(form);
-            const data = { ...part1Data };
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
 
-            // Add part 2 data
-            for (const [key, value] of formData.entries()) {
-                data[key] = value;
+            try {
+                // Disable button and show loading state
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Processing...';
+
+                const formData = new FormData(form);
+                const data = { ...part1Data };
+
+                // Add part 2 data
+                for (const [key, value] of formData.entries()) {
+                    data[key] = value;
+                }
+
+                localStorage.setItem('malnutrition-form', JSON.stringify(data));
+
+                // Call API and store response in localStorage
+                const profileData = JSON.parse(localStorage.getItem('profile-data'));
+                const malnutritionForm = JSON.parse(localStorage.getItem('malnutrition-form'));
+                const sitStandSummary = JSON.parse(localStorage.getItem('sit-stand-summary'));
+
+                // Await API call - this will pause execution until the API responds
+                const res = await callStsApi(profileData, malnutritionForm, sitStandSummary);
+                if (!res || res.error) {
+                    throw new Error(res?.error || 'API request failed');
+                }
+                // // Store response after successful API call
+                localStorage.setItem('sts-api-response', JSON.stringify(res));
+                console.log("API call successful, response stored.");
+
+                // Navigate to results page only after everything is complete
+                window.location.href = 'results.html';
+
+            } catch (error) {
+                // Re-enable button and restore original text on error
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                alert('There was an error processing your data. Please try again later.');
             }
-
-            localStorage.setItem('malnutrition-form', JSON.stringify(data));
-            window.location.href = 'results.html';
         }
 
         // ====================================
@@ -321,6 +353,9 @@
         });
         nextBtn.addEventListener('click', handleNextClick);
         danoneSelect.addEventListener('change', updateFrequencyVisibility);
+
+        // Form submit properly handles async functions
+        // The await in handleFormSubmit will pause execution until API completes
         form.addEventListener('submit', handleFormSubmit);
 
         // ====================================

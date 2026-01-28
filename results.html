@@ -300,34 +300,18 @@
     const profileData = JSON.parse(localStorage.getItem('profile-data'));
     const malnutritionForm = JSON.parse(localStorage.getItem('malnutrition-form'));
     const sitStandSummary = JSON.parse(localStorage.getItem('sit-stand-summary'));
-    let res = null;
+    const apiResponse = JSON.parse(localStorage.getItem('sts-api-response'));
     console.log('Profile Data:', profileData);
     console.log('Malnutrition Form Data:', malnutritionForm);
     console.log('Sit-Stand Summary Data:', sitStandSummary);
-    try {
-        // res = await callStsApi(profileData, malnutritionForm, sitStandSummary);
-        res = {
-            "message": "Record created",
-            "record_id": "868b2131-0d15-4195-9b61-a67b03426c21",
-            "dapm_uid": "",
-            "malnutrition_score": 2,
-            "malnutrition_risk": "Moderate",
-            "performance_category": "Low",
-            "performance_age_group": "18-30",
-            "fall_risk": "At risk"
-        }
-        console.log('Sit-to-Stand API Response:', res);
-    } catch (error) {
-        console.error('Error calling Sit-to-Stand API:', error);
-    }
+    console.log('API Response Data:', apiResponse);
     async function displayRiskScores() {
         try {
             const fallReps = sitStandSummary.reps;
-            const fallPerformanceCategory = res.performance_category;
-            const fallRiskCategory = res.fall_risk;
-            const malnutritionRiskScore = res.malnutrition_score;
-            const malnutritionRiskCategory = res.malnutrition_risk;
-            console.log(fallReps, fallPerformanceCategory, fallRiskCategory, malnutritionRiskScore, malnutritionRiskCategory);
+            const fallPerformanceCategory = apiResponse.performance_category;
+            const fallRiskCategory = apiResponse.fall_risk;
+            const malnutritionRiskScore = apiResponse.malnutrition_score;
+            const malnutritionRiskCategory = apiResponse.malnutrition_risk;
 
             if (fallReps != null) {
                 const fallScoreHeader = document.getElementById("fall-score-header-reps");
@@ -353,8 +337,7 @@
                 const FALL_MIN = 0;
                 const FALL_MAX = 100; // Use cutoff * 2 for max value
                 let value = 0;
-                console.log('Fall Risk Category:', fallRiskCategory);
-                if (fallRiskCategory == 'No risk') {
+                if (fallRiskCategory == 'Not at risk') {
                     value = 75;
                 } else if (fallRiskCategory == 'At risk') {
                     value = 25;
