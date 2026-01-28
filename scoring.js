@@ -16,6 +16,15 @@ function getAgeFromDob(dob) {
   return age;
 }
 
+const AT_RISK_THRESHOLDS = [
+  { performanceAgeGroup: '18-30', minAtRiskRepCount: 11, maxAtRiskCount: 16 }, // Moderate: 11–15, High: >16
+  { performanceAgeGroup: '31-50', minAtRiskRepCount: 10, maxAtRiskCount: 14 }, // Moderate: 10–13, High: >14
+  { performanceAgeGroup: '51-65', minAtRiskRepCount: 8, maxAtRiskCount: 12 }, // Moderate: 8–11, High: >12
+  { performanceAgeGroup: '66-75', minAtRiskRepCount: 7, maxAtRiskCount: 11 }, // Moderate: 7–11, High: >11
+  { performanceAgeGroup: '76-85', minAtRiskRepCount: 6, maxAtRiskCount: 10 }, // Moderate: 6–9, High: >10
+  { performanceAgeGroup: '85+', minAtRiskRepCount: 5, maxAtRiskCount: 8 }, // Moderate: 5–8, High: >9
+];
+
 const fallPerformanceCategoryContent = {
   Low: 'Below recommended level, indicating possible lower muscle weakness',
   Moderate: '“Within normal range for your age group” ',

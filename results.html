@@ -319,6 +319,7 @@
             const fallRiskCategory = apiResponse.fall_risk;
             const malnutritionRiskScore = apiResponse.malnutrition_score;
             const malnutritionRiskCategory = apiResponse.malnutrition_risk;
+            const performanceAgeGroup = apiResponse.performance_age_group;
 
             if (fallReps != null) {
                 const fallScoreHeader = document.getElementById("fall-score-header-reps");
@@ -340,20 +341,37 @@
             const fallScoreContainer = document.getElementById("fallScore");
             const fallScorePointer = document.getElementById("fallScore-pointer");
             fallScorePointer.style.top = "50%"; // Center vertically
-            if (fallRiskCategory) {
-                const FALL_MIN = 0;
-                const FALL_MAX = 100; // Use cutoff * 2 for max value
-                let value = 0;
-                if (fallRiskCategory == 'Not at risk') {
-                    value = 75;
-                } else if (fallRiskCategory == 'At risk') {
-                    value = 25;
-                }
-                const ratio = (value - FALL_MIN) / (FALL_MAX - FALL_MIN);
-                const pointerLeft = Math.max(5, ratio * 100); // Adjust for horizontal alignment
+            if (fallRiskCategory && performanceAgeGroup) {
+                // Find the threshold values for this age group
+                const thresholds = AT_RISK_THRESHOLDS.find(
+                    t => t.performanceAgeGroup === performanceAgeGroup
+                );
 
-                fallScorePointer.style.left = `${pointerLeft}%`; // Set horizontal position
-                fallScoreContainer.classList.remove("d-none");
+                if (thresholds) {
+                    const FALL_MIN = 0;
+                    const FALL_MID = thresholds.minAtRiskRepCount; // Middle of the bar
+                    const FALL_MAX = thresholds.maxAtRiskCount; // Right end of the bar
+
+                    let pointerLeft;
+
+                    if (fallReps <= FALL_MID) {
+                        // At risk zone: 0 to minAtRiskCount maps to 0% to 50% of the bar
+                        const ratio = fallReps / FALL_MID;
+                        pointerLeft = ratio * 50;
+                    } else {
+                        // Not at risk zone: minAtRiskCount to maxAtRiskCount maps to 50% to 100% of the bar
+                        const ratio = (fallReps - FALL_MID) / (FALL_MAX - FALL_MID);
+                        pointerLeft = 50 + (ratio * 50);
+                    }
+
+                    // Clamp between 5% and 95% for visual clarity
+                    pointerLeft = Math.max(5, Math.min(95, pointerLeft));
+
+                    fallScorePointer.style.left = `${pointerLeft}%`; // Set horizontal position
+                    fallScoreContainer.classList.remove("d-none");
+                } else {
+                    fallScoreContainer.classList.add("d-none");
+                }
             } else {
                 fallScoreContainer.classList.add("d-none");
                 fallScorePointer.style.left = "50%"; // Default to center if no score
