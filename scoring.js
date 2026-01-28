@@ -36,6 +36,20 @@ const malnutritionRiskContent = {
   High: 'Your malnutrition risk appears high — this may reflect early signs of reduced food or protein intake.',
 };
 
+const fallRiskRecommendations = {
+  'Not at risk':
+    'To maintain strength and balance, stay active and include good sources of protein. Danone’s specialized nutrition products can help support muscle health. Retake the full test in 3 weeks to track your progress.',
+  'At risk':
+    'To support your strength and stability, try simple leg‑strengthening activities and increase your protein intake. Danone’s protein‑rich specialized nutrition options can help. Retake the full test in 3 weeks to monitor changes.',
+};
+
+const malnutritionRiskRecommendations = {
+  Low: 'Maintain balanced meals with protein throughout the day. Danone’s specialized nutrition range can help you keep supporting muscle health. Retake the test in 3 weeks to stay on track.',
+  Moderate:
+    'Try adding more protein to your meals to support energy and muscle function. Danone’s protein‑enriched nutrition products can help fill gaps. Retake the full test in 3 weeks.',
+  High: 'Your body may benefit from more protein and energy. Danone’s high‑protein specialized nutrition options can help support your daily needs. Consider retaking the full test in 3 weeks to check progress',
+};
+
 async function callStsApi(profileData, malnutritionForm, sitStandSummary) {
   if (!profileData || !malnutritionForm || !sitStandSummary) {
     throw new Error('Missing required data for API call');

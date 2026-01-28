@@ -257,6 +257,9 @@
                     </div>
                 </div>
             </div>
+            <div id="fallScore-description"
+                style="margin-top: 0.5rem; font-size: clamp(0.875rem, 2vw, 1rem); color: #555;">
+                --Fall Risk Description--</div>
         </div>
 
         <!-- Malnutrition Risk Score Bar -->
@@ -279,6 +282,10 @@
                     </div>
                 </div>
             </div>
+            <div id="malnutritionScore-description"
+                style="margin-top: 0.5rem; font-size: clamp(0.875rem, 2vw, 1rem); color: #555;">
+                --Malnutrition Risk Description--</div>
+
         </div>
 
         <!-- Recommendations Section -->
@@ -351,6 +358,8 @@
                 fallScoreContainer.classList.add("d-none");
                 fallScorePointer.style.left = "50%"; // Default to center if no score
             }
+            const fallScoreDescription = document.getElementById("fallScore-description");
+            fallScoreDescription.textContent = fallRiskContent[fallRiskCategory];
 
             // Update Malnutrition Risk Score Meter
             const malnutritionScoreContainer = document.getElementById("malnutritionScore");
@@ -373,6 +382,8 @@
                 malnutritionScoreContainer.classList.add("d-none");
                 malnutritionScorePointer.style.left = "50%"; // Default to center if no score
             }
+            const malnutritionScoreDescription = document.getElementById("malnutritionScore-description");
+            malnutritionScoreDescription.textContent = malnutritionRiskContent[malnutritionRiskCategory];
 
             // Update Results Content with color-coded headers
             const resultsContent = document.getElementById("resultsContent");
@@ -389,20 +400,21 @@
             }
 
             // Get the respective text content
-            const fallRiskText = fallRiskContent[fallRiskCategory]
-            const malnutritionRiskText = malnutritionRiskContent[malnutritionRiskCategory];
+            const fallRiskHeader = fallRiskCategory == "Not at risk" ? 'For Low Fall Risk:' : 'For High Fall Risk:';
+            const fallRiskText = fallRiskRecommendations[fallRiskCategory]
+            const malnutritionRiskText = malnutritionRiskRecommendations[malnutritionRiskCategory];
 
             // Format and display the content
             resultsContent.innerHTML = `
                 <div class="mb-2">
                     <div style="font-weight: 600; font-size: 1.4rem; color: ${fallRiskColor}; "">
-                        Fall Risk: ${fallRiskCategory}
+                        ${fallRiskHeader}
                     </div>
                     <div>${fallRiskText}</div>
                 </div>
                 <div>
                     <div style="font-weight: 600; font-size: 1.4rem; color: ${malnutritionColor};">
-                        Malnutrition Risk: ${malnutritionRiskCategory}
+                        For ${malnutritionRiskCategory} Malnutrition Risk
                     </div>
                     <div>${malnutritionRiskText}</div>
                 </div>
