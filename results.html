@@ -147,7 +147,8 @@
             <div class="d-flex flex-column">
                 <div style="font-size: 2rem;"><strong id="fall-score-header-reps" style="font-size: 3rem;"></strong>
                     repetitions</div>
-                <div style=" color:#3764b3;font-size: 2rem;" id="fall-score-header-text"></div>
+                <div style="font-size:1rem;" id="fall-score-header-text"></div>
+                <div style="color:#3764b3;font-size: 2rem;" id="fall-score-subheader-text"></div>
             </div>
         </div>
 
@@ -183,9 +184,7 @@
         <!-- Recommendations -->
         <div class="mb-2">Recommendations</div>
         <div class="container" id="recommendations">
-            <div id="resultsContent">
-                Your personalized nutrition and exercise advice will appear here
-            </div>
+            <div id="resultsContent" style="line-height: 1.8;">--</div>
         </div>
 
         <div id="btn-wrapper" class="d-flex justify-content-center my-4">
@@ -202,7 +201,17 @@
     console.log('Malnutrition Form Data:', malnutritionForm);
     console.log('Sit-Stand Summary Data:', sitStandSummary);
     try {
-        res = await callStsApi(profileData, malnutritionForm, sitStandSummary);
+        // res = await callStsApi(profileData, malnutritionForm, sitStandSummary);
+        res = {
+            "message": "Record created",
+            "record_id": "868b2131-0d15-4195-9b61-a67b03426c21",
+            "dapm_uid": "",
+            "malnutrition_score": 2,
+            "malnutrition_risk": "Moderate",
+            "performance_category": "Low",
+            "performance_age_group": "18-30",
+            "fall_risk": "At risk"
+        }
         console.log('Sit-to-Stand API Response:', res);
     } catch (error) {
         console.error('Error calling Sit-to-Stand API:', error);
@@ -220,12 +229,16 @@
                 const fallScoreHeader = document.getElementById("fall-score-header-reps");
                 fallScoreHeader.textContent = fallReps;
                 const fallScoreHeaderText = document.getElementById("fall-score-header-text");
+                const fallScoreSubheaderText = document.getElementById("fall-score-subheader-text");
                 if (fallPerformanceCategory == "Low") {
-                    fallScoreHeaderText.textContent = "Great job!";
+                    fallScoreHeaderText.textContent = fallPerformanceCategoryContent.low;
+                    fallScoreSubheaderText.textContent = "Stay active!";
                 } else if (fallPerformanceCategory == "Moderate") {
-                    fallScoreHeaderText.textContent = "Good job!";
-                } else { // fallPerformanceCategory == "High" / "Unknown"
-                    fallScoreHeaderText.textContent = "Stay active!";
+                    fallScoreHeaderText.textContent = fallPerformanceCategoryContent.moderate;
+                    fallScoreSubheaderText.textContent = "Good job!";
+                } else { // fallPerformanceCategory == "High"
+                    fallScoreHeaderText.textContent = fallPerformanceCategoryContent.high;
+                    fallScoreSubheaderText.textContent = "Great job!";
                 }
             }
             // Update Fall Risk Score Meter
@@ -267,6 +280,44 @@
                 malnutritionScoreContainer.classList.add("d-none");
                 malnutritionScorePointer.style.left = "50%"; // Default to center if no score
             }
+
+            // Update Results Content with color-coded headers
+            const resultsContent = document.getElementById("resultsContent");
+
+            // Determine fall risk color
+            const fallRiskColor = fallRiskCategory === 'At risk' ? '#dc3545' : '#27b83e'; // red : green
+
+            // Determine malnutrition risk color
+            let malnutritionColor = '#27b83e'; // green (default for low)
+            if (malnutritionRiskCategory === 'High') {
+                malnutritionColor = '#dc3545'; // red
+            } else if (malnutritionRiskCategory === 'Moderate') {
+                malnutritionColor = '#ffc107'; // amber
+            }
+
+            // Get the respective text content
+            const fallRiskText = fallRiskContent[fallRiskCategory] || 'No information available';
+            const malnutritionRiskText = malnutritionRiskContent[malnutritionRiskCategory?.toLowerCase()] || 'No information available';
+
+            // Format and display the content
+            resultsContent.innerHTML = `
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="font-weight: 600; font-size: 1.4rem; color: ${fallRiskColor}; margin-bottom: 0.5rem;">
+                        Fall Risk: ${fallRiskCategory}
+                    </div>
+                    <div style="color: #555;">
+                        ${fallRiskText}
+                    </div>
+                </div>
+                <div>
+                    <div style="font-weight: 600; font-size: 1.4rem; color: ${malnutritionColor}; margin-bottom: 0.5rem;">
+                        Malnutrition Risk: ${malnutritionRiskCategory}
+                    </div>
+                    <div style="color: #555;">
+                        ${malnutritionRiskText}
+                    </div>
+                </div>
+            `;
 
         } catch (error) {
             alert('An error occurred while fetching risk scores. Please try again later.');

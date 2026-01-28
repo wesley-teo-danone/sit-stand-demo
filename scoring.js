@@ -16,13 +16,20 @@ function getAgeFromDob(dob) {
   return age;
 }
 
-const fallRiskContent = {
-  low: 'Your fall risk is low — this means your muscle strength and balance are within a safe range.',
-  moderate: '[To insert]',
-  high: 'Your fall risk appears high (below cut-off value for you age group) — this may indicate challenges with strength or balance during daily movements',
+const fallPerformanceCategoryContent = {
+  low: 'Below recommended level, indicating possible lower muscle weakness',
+  moderate: '“Within normal range for your age group” ',
+  high: 'Above average lower-body strength and endurance for your age group',
 };
 
-const malnutritionContent = {
+const fallRiskContent = {
+  'No risk':
+    'Your fall risk is low — this means your muscle strength and balance are within a safe range.',
+  'At risk':
+    'Your fall risk appears high (below cut-off value for you age group) — this may indicate challenges with strength or balance during daily movements',
+};
+
+const malnutritionRiskContent = {
   low: 'Your malnutrition risk appears low — your current nutrition seems sufficient to support daily activities.',
   moderate:
     'Your malnutrition risk appears moderate — this may reflect early signs of reduced food or protein intake.',
