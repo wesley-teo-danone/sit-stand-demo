@@ -185,7 +185,7 @@
                         <option value="hypertension">Hypertension</option>
                         <option value="autoimmune">Autoimmune Disease</option>
                         <option value="gastrointestinal">Gastrointestinal disorder</option>
-                        <option value="other">Other</option>
+                        <option value="others">Others</option>
                     </select>
                 </div>
 
@@ -335,6 +335,8 @@
 
                 // Navigate to results page only after everything is complete
                 window.location.href = 'results.html';
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
 
             } catch (error) {
                 // Re-enable button and restore original text on error
