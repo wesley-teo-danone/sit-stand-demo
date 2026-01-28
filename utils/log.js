@@ -1,11 +1,10 @@
 // Slide Telemetry: time-series for 2 charts
-import { dateDDMMYYYY, sanitizePart } from './session_recorder.js';
 const Telemetry = {
   t0: null,
   points: [], // [{t, knee, hipVel, phase}]
   spans: [], // [{start, end, phase}]
   marks: [], // discrete events (e.g., rep completed)
-  results: null
+  results: null,
 };
 let _span = null;
 
@@ -24,20 +23,8 @@ export function telemSetResults(summary) {
     knee_score: to2(summary.knee?.pct), // 0..100 pct
     back_score: to2(summary.back?.pct), // 0..100 pct
     symmetry_score: to2(summary.symmetry?.pct), // 0..100 pct
-    overall_score: to2(summary.overall?.pct) // 0..100 (already percent)
+    overall_score: to2(summary.overall?.pct), // 0..100 (already percent)
   };
-}
-function telemetryFilenameBase() {
-  const { studyId, visitId } = window.APP_DATA || {};
-  const sid = sanitizePart(studyId || 'unknown');
-  const vid = sanitizePart(visitId || 'unknown');
-  const date = dateDDMMYYYY(); //
-
-  // Match your existing fallback behavior if studyId is missing/unknown
-  if (!sid || sid === 'unknown') {
-    return `session-${vid}-${date}`;
-  }
-  return `${sid}-${vid}-${date}`;
 }
 
 export function telemStart(nowMs) {
@@ -68,7 +55,7 @@ export function telemPoint(
   partialReps = null,
   fullReps = null,
   hipVelAnk = null,
-  armsGate = null
+  armsGate = null,
 ) {
   const t = (nowMs - (Telemetry.t0 || nowMs)) / 1000;
 
@@ -83,7 +70,7 @@ export function telemPoint(
     fullReps: fullReps == null ? null : fullReps | 0, // running count
     phase,
     hipVelAnk: hipVelAnk == null ? 0 : +hipVelAnk.toFixed(3),
-    armsGate: armsGate == null ? null : !!armsGate
+    armsGate: armsGate == null ? null : !!armsGate,
   });
 
   if (_span) {
@@ -99,41 +86,4 @@ export function telemStop(nowMs) {
     Telemetry.spans.push(_span);
     _span = null;
   }
-}
-export function download(name, mime, text) {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([text], { type: mime }));
-  a.download = name;
-  a.click();
-}
-export function exportSlideJSON() {
-  const payload = {
-    points: Telemetry.points,
-    spans: Telemetry.spans,
-    results: Telemetry.results
-  };
-
-  const base = sanitizePart(telemetryFilenameBase());
-
-  // download('sitstand_phase_knee_hip.json', 'application/json', JSON.stringify(payload, null, 2));
-
-  download(
-    `${base}.json`,
-    'application/json',
-    JSON.stringify(payload, null, 2)
-  );
-}
-
-export function buildSlideJSONBlob() {
-  const payload = {
-    points: Telemetry.points,
-    spans: Telemetry.spans,
-    results: Telemetry.results
-  };
-  const base = sanitizePart(telemetryFilenameBase());
-  const name = `${base}.json`;
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {
-    type: 'application/json'
-  });
-  return { name, blob };
 }

@@ -1,31 +1,22 @@
-import { hudSetReps, hudSetTimer, hudSetFormBars } from '../ui/status_bar.js';
-import { canvas } from '../utils/canvas.js';
-import { showResultsModal, hideAngleHint } from '../ui/overlay.js';
 import { cueShallow, cueCrossArms, speakFinishCue } from './gate.js';
-import { hidePill, setPhaseLabel, showPill } from '../ui/phase.js';
-import {
-  telemOnPhase,
-  telemStart,
-  telemStop,
-  exportSlideJSON,
-  telemPoint,
-  buildSlideJSONBlob,
-  telemSetResults
-} from '../utils/log.js';
-import {
-  startSessionRecording,
-  stopSessionRecording,
-  defaultFilenameBase,
-  sanitizePart
-} from '../utils/session_recorder.js';
-import JSZip from 'https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm';
-import { downloadBlob, zipNameFromExisting } from '../utils/zip.js';
 import {
   initCoachSpeech,
   timedCoachReset,
   timedCoachStart,
-  CoachSpeech
+  CoachSpeech,
 } from './gate.js';
+import { showResultsModal, hideAngleHint } from '../ui/overlay.js';
+import { hidePill, setPhaseLabel, showPill } from '../ui/phase.js';
+import { hudSetReps, hudSetTimer, hudSetFormBars } from '../ui/status_bar.js';
+import { canvas } from '../utils/canvas.js';
+import {
+  telemOnPhase,
+  telemStart,
+  telemStop,
+  telemPoint,
+  telemSetResults,
+} from '../utils/log.js';
+
 const SitStand = (() => {
   // --- UI bits (hook to your existing HUD/status bar) ---
   const $start = () => document.getElementById('hudStart');
@@ -159,7 +150,7 @@ const SitStand = (() => {
     standing: 'Standing',
     going_down: 'Going Down',
     going_up: 'Going up',
-    seated: 'Seated'
+    seated: 'Seated',
   };
 
   const BASE_STYLE = {
@@ -168,7 +159,7 @@ const SitStand = (() => {
 
     lmOuter: '#e1e1e1', // outer ring
     lmInner: '#f6f6f6', // core
-    ghostAlpha: 0.4
+    ghostAlpha: 0.4,
   };
 
   const FLASH_STYLES = {
@@ -176,20 +167,20 @@ const SitStand = (() => {
       connector: 'rgba(16,185,129,1.00)',
       lmOuter: '#10B981',
       lmInner: '#34D399',
-      ghostAlpha: 0.4
+      ghostAlpha: 0.4,
     }, // green
     ok: {
       connector: 'rgba(245,158,11,1.00)',
       lmOuter: '#F59E0B',
       lmInner: '#FBBF24',
-      ghostAlpha: 0.4
+      ghostAlpha: 0.4,
     }, // orange
     bad: {
       connector: 'rgba(239,68,68,1.00)',
       lmOuter: '#EF4444',
       lmInner: '#F87171',
-      ghostAlpha: 0.4
-    } // red
+      ghostAlpha: 0.4,
+    }, // red
   };
 
   function updateCalibItem(rowId, ok) {
@@ -239,82 +230,6 @@ const SitStand = (() => {
     return calibrating;
   }
 
-  // function onCalibrationComplete() {
-  //   if (!calibrating || sessionActive || countdownId) return;
-  //   calibrating = false;
-
-  //   // Hide calibration HUD
-  //   $calib()?.classList.add('hidden');
-
-  //   const now = performance.now();
-
-  //   // Voice line before countdown
-  //   if (typeof CoachSpeech?.speakTimedNow === 'function') {
-  //     CoachSpeech.speakTimedNow(now, 'We will now start the session in three seconds');
-  //   }
-
-  //   // 3-2-1 countdown, then start real session
-  //   runCountdown(COUNTDOWN_SEC).then(() => {
-  //     $statusBar()?.classList.remove('hidden');
-  //     showPill();
-  //     setPhaseLabel("");
-
-  //     const startCore = () => {
-  //       const nowInner = performance.now();
-  //       telemStart(nowInner);
-  //       telemOnPhase(nowInner, phase);
-  //       startSessionTimer(sessionDurationSec);   // sets sessionActive = true
-  //       timedCoachStart(nowInner);
-  //     };
-
-  //     requestAnimationFrame(() => {
-  //       startSessionRecording({
-  //         videoEl: document.getElementById('webcam'),
-  //         includeMic: false
-  //       });
-  //       startCore();
-  //     });
-  //   });
-  // }
-
-  //   function onCalibrationComplete() {
-  //   if (!calibrating || sessionActive || countdownId) return;
-  //   calibrating = false;
-
-  //   // Hide calibration HUD
-  //   $calib()?.classList.add('hidden');
-
-  //   const now = performance.now();
-
-  //   // Intro line: "We will start the session in"
-  //   if (CoachSpeech && typeof CoachSpeech.speakTimedNow === 'function') {
-  //     CoachSpeech.speakTimedNow(now, 'We will start the session in');
-  //   }
-
-  //   // Now run the 3–2–1 countdown (HUD + audio)
-  //   runCountdown(COUNTDOWN_SEC).then(() => {
-  //     $statusBar()?.classList.remove('hidden');
-  //     showPill();
-  //     setPhaseLabel("");
-
-  //     const startCore = () => {
-  //       const nowInner = performance.now();
-  //       telemStart(nowInner);
-  //       telemOnPhase(nowInner, phase);
-  //       startSessionTimer(sessionDurationSec);
-  //       timedCoachStart(nowInner);
-  //     };
-
-  //     requestAnimationFrame(() => {
-  //       startSessionRecording({
-  //         videoEl: document.getElementById('webcam'),
-  //         includeMic: false
-  //       });
-  //       startCore();
-  //     });
-  //   });
-  // }
-
   function onCalibrationComplete() {
     if (!calibrating || sessionActive || countdownId) return;
     calibrating = false;
@@ -348,10 +263,6 @@ const SitStand = (() => {
         };
 
         requestAnimationFrame(() => {
-          startSessionRecording({
-            videoEl: document.getElementById('webcam'),
-            includeMic: false
-          });
           startCore();
         });
       });
@@ -387,7 +298,7 @@ const SitStand = (() => {
     const cfg = {
       good: { f1: 880, f2: 1320, dur: 0.18 }, // bright 2-note up
       ok: { f1: 660, f2: 660, dur: 0.14 }, // single soft
-      bad: { f1: 300, f2: 220, dur: 0.22 } // down step
+      bad: { f1: 300, f2: 220, dur: 0.22 }, // down step
     }[tier];
 
     const t0 = ctx.currentTime;
@@ -506,11 +417,11 @@ const SitStand = (() => {
     }
 
     if (remaining <= 0) {
-      endSession("timeup");
+      endSession('timeup');
     }
   }
 
-  async function endSession(reason = "timeup") {
+  async function endSession(reason = 'timeup') {
     // 1) Stop timers / telemetry
     stopSessionTimer();
     telemStop(performance.now());
@@ -520,45 +431,9 @@ const SitStand = (() => {
       kneescore_arr,
       backScore_arr,
       depth_arr,
-      symmetry_arr
+      symmetry_arr,
     );
     timedCoachReset();
-
-    let jsonFile = null;
-    try {
-      jsonFile = buildSlideJSONBlob();
-    } catch (e) {
-      console.error("[endSession] buildSlideJSONBlob failed:", e);
-    }
-
-    let videoResult = null;
-    try {
-      videoResult = await stopSessionRecording(reason || "timeup");
-    } catch (e) {
-      console.error("[endSession] stopSessionRecording failed:", e);
-    }
-
-    // try {
-    //   const zip = new JSZip();
-
-    //   if (jsonFile?.blob && jsonFile?.name) {
-    //     zip.file(jsonFile.name, jsonFile.blob);
-    //   }
-
-    //   if (videoResult?.blob && videoResult?.filename) {
-    //     zip.file(videoResult.filename, videoResult.blob);
-    //   }
-
-    //   const zipName =
-    //     (jsonFile?.name && zipNameFromExisting(jsonFile.name)) ||
-    //     (videoResult?.filename && zipNameFromExisting(videoResult.filename)) ||
-    //     `${defaultFilenameBase()}.zip`;
-
-    //   const zipBlob = await zip.generateAsync({ type: 'blob' });
-    //   await downloadBlob(zipName, zipBlob);
-    // } catch (err) {
-    //   console.error('[endSession] ZIP packaging failed:', err);
-    // }
 
     // 5) UI visibility (unchanged)
     $countdown()?.classList.add('hidden');
@@ -589,7 +464,7 @@ const SitStand = (() => {
       kneescore_arr.length,
       backScore_arr.length,
       depth_arr.length,
-      symmetry_arr.length
+      symmetry_arr.length,
     );
 
     const fullrepcounter = fullrepCount;
@@ -613,7 +488,7 @@ const SitStand = (() => {
     return {
       reps,
       fullrepcounter,
-      partialRepcounter
+      partialRepcounter,
       // knee: { avg: kneeAvg, pct: kneePct, max: 30 },
       // depth: { avg: depthAvg, pct: depthPct, max: 30 },
       // symmetry: { avg: symAvg, pct: symPct, max: 20 },
@@ -632,7 +507,7 @@ const SitStand = (() => {
     shoulderY,
     ankleY,
     kneeY,
-    kneeFlex3D
+    kneeFlex3D,
   ) {
     // const denom = Math.max(20, Math.abs(kneeY - ankleY));
     // const f = clamp01((kneeY - hipY) / denom);
@@ -751,96 +626,6 @@ const SitStand = (() => {
   // Helpers
   const clamp = (x, lo, hi) => Math.min(Math.max(x, lo), hi);
 
-  // function attachStart() {
-  //   const btn = document.getElementById('sitStandStartBtn');
-  //   if (!btn) return;
-
-  //   const onStart = () => {
-  //     if (sessionActive || countdownId) return;
-  //     try { ensureAudio(); } catch (_) {}
-  //     initCoachSpeech();
-
-  //     $start()?.classList.add('hidden');
-  // //     runCountdown(COUNTDOWN_SEC).then(() => {
-  // //       $statusBar()?.classList.remove('hidden');
-  // //       startSessionTimer(sessionDurationSec);
-  // //       showPill();
-  // //       setPhaseLabel("");
-  // //       telemStart(performance.now()); // record
-  // //       telemOnPhase(performance.now(), phase);  // record initial phase span
-
-  // //       //to record session
-
-  // //       startSessionRecording({
-  // //   videoEl: document.getElementById('webcam'),
-  // //   includeMic: false
-  // // });
-
-  // //     });
-  //       runCountdown(COUNTDOWN_SEC).then(() => {
-  //         $statusBar()?.classList.remove('hidden');
-  //         showPill();
-  //         setPhaseLabel("");
-
-  //         const startCore = () => {
-  //           const now = performance.now();
-  //           telemStart(now);
-  //           telemOnPhase(now, phase);
-  //           startSessionTimer(sessionDurationSec); // sets sessionActive at the REAL start
-  //           timedCoachStart(now);
-
-  //         };
-
-  //         // If startSessionRecording is sync & light, just call then startCore():
-  //         // startSessionRecording({ videoEl: ..., includeMic:false });
-  //         // startCore();
-
-  //         // Safer: if it's heavy or async, separate paint vs work:
-  //         requestAnimationFrame(() => {
-  //           startSessionRecording({
-  //             videoEl: document.getElementById('webcam'),
-  //             includeMic: false
-  //           });
-  //           startCore();
-  //         });
-  //       });
-
-  //   };
-
-  //   // remove once:true — keep the same handler for the whole page life
-  //   btn.addEventListener('click', onStart);
-  // }
-
-  // function attachStart() {
-  //   const btn = document.getElementById('sitStandStartBtn');
-  //   if (!btn) return;
-
-  //   const onStart = () => {
-  //     if (sessionActive || countdownId || calibrating) return;
-  //     // try { ensureAudio(); } catch (_) {}
-  //     // initCoachSpeech();
-
-  //     // Hide Start slab & other HUD bits
-  //     $start()?.classList.add('hidden');
-  //     $countdown()?.classList.add('hidden');
-  //     $statusBar()?.classList.add('hidden');
-
-  //     // Show calibration bar and reset its UI
-  //     $calib()?.classList.remove('hidden');
-  //     calibrating = true;
-  //     resetCalibrationUI();
-
-  //     const now = performance.now();
-  //     if (typeof CoachSpeech?.speakOnce === 'function') {
-  //       CoachSpeech.speakOnce(now,
-  //         'Please ensure your whole body is visible and stand at a forty five degree angle'
-  //       );
-  //     }
-  //   };
-
-  //   btn.addEventListener('click', onStart);
-  // }
-
   function attachStart() {
     const btn = document.getElementById('sitStandStartBtn');
     if (!btn) return;
@@ -867,7 +652,7 @@ const SitStand = (() => {
         const now = performance.now();
         CoachSpeech?.speakOnce?.(
           now,
-          'Please ensure your whole body is visible and stand at a forty five degree angle'
+          'Please ensure your whole body is visible and stand at a forty five degree angle',
         );
       });
     };
@@ -954,7 +739,7 @@ const SitStand = (() => {
 
     get() {
       return this.scale;
-    }
+    },
   };
 
   // Velocity estimator for hip-ankle *fraction* (normalized depth)
@@ -976,7 +761,7 @@ const SitStand = (() => {
     reset() {
       this.lastT = this.lastF = null;
       this.raw = this.smooth = 0;
-    }
+    },
   };
 
   //Velocity estimator for hipFrac
@@ -994,7 +779,7 @@ const SitStand = (() => {
       this.lastT = t;
       this.lastF = f;
       return this.smooth;
-    }
+    },
   };
 
   const KneeVel = {
@@ -1012,7 +797,7 @@ const SitStand = (() => {
       this.lastT = t;
       this.lastA = angleDeg;
       return this.smooth;
-    }
+    },
   };
 
   const Vel2 = {
@@ -1034,7 +819,7 @@ const SitStand = (() => {
     reset() {
       this.lastT = this.lastX = null;
       this.v = this.smooth = 0;
-    }
+    },
   };
 
   function scoreKneeBand(angleDeg, upper = 90, falloffDeg = 20, curve = 1.8) {
@@ -1075,9 +860,9 @@ const SitStand = (() => {
       {
         backGrace: -5, // full points if backward lean ≥ -5°
         backZero: -20, // 0 points by -20°
-        maxPts: 20
+        maxPts: 20,
       },
-      cfg || {}
+      cfg || {},
     );
 
     if (minBackDeg >= C.backGrace) return C.maxPts; // at/above -5°
@@ -1168,7 +953,7 @@ const SitStand = (() => {
     kneeY,
     shoulderY,
     ankleY,
-    kneeFlex3D
+    kneeFlex3D,
   }) {
     if (!sessionActive) return;
 
@@ -1176,7 +961,7 @@ const SitStand = (() => {
       f: hipFrac,
       vel: hipVel,
       kVel: kneeVel,
-      hipAnkVel
+      hipAnkVel,
     } = updatePhaseFromHip(now, hipY, shoulderY, ankleY, kneeY, kneeFlex3D);
 
     //telemPoint(now, kneeFlex3D, hipVel, phase, hipFrac, kneeVel, hipBackDeg, repCounter);
@@ -1191,7 +976,7 @@ const SitStand = (() => {
       partialrepCount,
       fullrepCount,
       hipAnkVel,
-      _armsgateopen
+      _armsgateopen,
     );
 
     // track posture extremes
@@ -1330,7 +1115,7 @@ const SitStand = (() => {
         const f1 = scoreKneeBand(snapKneeAngle);
         const f2 = scoreBackPostureSigned(
           maxHipBackDegForward,
-          minHipBackDegBackward
+          minHipBackDegBackward,
         );
         const f3 = scoreSymmetry(downMs, upMs);
         const f4 = scoreDepth(snapHipY, snapKneeY);
@@ -1421,7 +1206,7 @@ const SitStand = (() => {
     FACE_MAX_INDEX,
     HAND_IDX,
     isCalibrating,
-    setCalibrationStatus
+    setCalibrationStatus,
   };
 })();
 
@@ -1451,5 +1236,5 @@ export const {
   FACE_MAX_INDEX,
   HAND_IDX,
   isCalibrating,
-  setCalibrationStatus
+  setCalibrationStatus,
 } = SitStand;
