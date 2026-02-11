@@ -339,7 +339,7 @@
                 }
 
                 // reps, full_rep_counter, partial_rep_counter, analysis_data
-                const stsWrapper = new STSWrapper("DH-Tech-API-Test", "https://dan-dh-api-eu-uat.hive.digital4danone.com");
+                const stsWrapper = new STSWrapper("DH-Tech-API-Test", "https://dan-dh-api-apac-uat.hive.digital4danone.com");
                 const res = await stsWrapper.submitTestResults(profileData, malnutritionForm, stsResults);
 
                 localStorage.setItem('sts-api-response', JSON.stringify(res));
