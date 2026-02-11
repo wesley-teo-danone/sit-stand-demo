@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>STS Frontend Library Demo</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- Add these 2 lines to the page that you are calling ironai-camera to enable the styling by Shoelace -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/themes/light.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/shoelace.js"></script>
+    <!--Until here -->
+    <script type="module"
+        src="https://digital-health-services-apac-beta.hive.digital4danone.com/fe-ai-sdk/df-digital-health.sts-fe-lib/latest/components/sts-camera.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+    <sts-camera></sts-camera>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const camera = document.querySelector("sts-camera");
+            try {
+                await camera.startCamera();
+            } catch (error) {
+                alert(error);
+            }
+        });
+        window.addEventListener("sts-results", (event) => {
+            localStorage.setItem("sts-results", JSON.stringify(event.detail));
+            window.location.href = "malnutrition-questionnaire.html";
+        });
+    </script>
+</body>
+
+</html>
