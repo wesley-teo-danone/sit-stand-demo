@@ -122,7 +122,7 @@
                 <label for="weightLoss" class="form-label">
                     Have you experienced unintentional weight loss in the last 6 months?
                 </label>
-                <select class="form-select" id="weightLoss" name="weightLoss" required>
+                <select class="form-select" id="weightLoss" name="malnutrition_weight_loss" required>
                     <option value="" selected disabled>Select an option</option>
                     <option value="none_or_lt_1kg">No (or less than 1kg)</option>
                     <option value="kg_1_5">Yes – 1 to 5 kg</option>
@@ -138,13 +138,13 @@
                 <label class="form-label">Has your appetite decreased recently?</label>
                 <div class="radio-group">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="appetite" id="appetiteYes" value="true"
-                            required>
+                        <input class="form-check-input" type="radio" name="malnutrition_poor_appetite" id="appetiteYes"
+                            value="true" required>
                         <label class="form-check-label" for="appetiteYes">Yes</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="appetite" id="appetiteNo" value="false"
-                            required>
+                        <input class="form-check-input" type="radio" name="malnutrition_poor_appetite" id="appetiteNo"
+                            value="false" required>
                         <label class="form-check-label" for="appetiteNo">No</label>
                     </div>
                 </div>
@@ -211,7 +211,7 @@
                     <label for="danoneProducts" class="form-label">
                         Do you currently use any Danone medical nutrition products?
                     </label>
-                    <select class="form-select" id="danoneProducts" name="danoneProducts">
+                    <select class="form-select" id="danoneProducts" name="danone_products">
                         <option value="" selected disabled>Select an option</option>
                         <option value="aptamil">Aptamil</option>
                         <option value="souvenaid">Souvenaid</option>
@@ -225,7 +225,7 @@
                     <label for="productFrequency" class="form-label">
                         If using a Danone product, how often do you use them?
                     </label>
-                    <select class="form-select" id="productFrequency" name="productFrequency">
+                    <select class="form-select" id="productFrequency" name="product_frequency">
                         <option value="" selected disabled>Select an option</option>
                         <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
@@ -242,7 +242,9 @@
         </form>
     </div>
     <script src="scoring.js"></script>
-    <script>
+    <script type="module">
+        import STSWrapper from "https://digital-health-services-apac-beta.hive.digital4danone.com/fe-ai-sdk/df-digital-health.sts-fe-lib/latest/logic/sts-wrapper.js";
+
         // ====================================
         // DOM Element References
         // ====================================
@@ -250,7 +252,7 @@
         const part2 = document.getElementById('part2');
         const nextBtn = document.getElementById('nextBtn');
         const weightLossSelect = document.getElementById('weightLoss');
-        const appetiteRadios = document.querySelectorAll('input[name="appetite"]');
+        const appetiteRadios = document.querySelectorAll('input[name="malnutrition_poor_appetite"]');
         const form = document.getElementById('malnutritionForm');
         const danoneSelect = document.getElementById('danoneProducts');
         const freqGroup = document.getElementById('productFrequencyGroup');
@@ -273,8 +275,8 @@
         function handleNextClick() {
             // Save part 1 data
             part1Data = {
-                weightLoss: weightLossSelect.value,
-                appetite: Array.from(appetiteRadios).find(r => r.checked)?.value === 'true'
+                malnutrition_weight_loss: weightLossSelect.value,
+                malnutrition_poor_appetite: Array.from(appetiteRadios).find(r => r.checked)?.value === 'true'
             };
 
             // Transition to part 2
@@ -318,18 +320,28 @@
                 }
 
                 localStorage.setItem('malnutrition-form', JSON.stringify(data));
-
                 // Call API and store response in localStorage
                 const profileData = JSON.parse(localStorage.getItem('profile-data'));
+                // age, gender, height_cm, weight_kg, consent
                 const malnutritionForm = JSON.parse(localStorage.getItem('malnutrition-form'));
-                const sitStandSummary = JSON.parse(localStorage.getItem('sit-stand-summary'));
+                // malnutrition_weight_loss, malnutrition_poor_appetite, diseases, changes, danone_products, product_frequency
 
-                // Await API call - this will pause execution until the API responds
-                const res = await callStsApi(profileData, malnutritionForm, sitStandSummary);
-                if (!res || res.error) {
-                    throw new Error(res?.error || 'API request failed');
+                let stsResults = JSON.parse(localStorage.getItem('sts-results'));
+                console.log("STS Results from localStorage:", stsResults);
+                if (!stsResults) {
+                    stsResults = {
+                        reps: 100,
+                        full_rep_counter: 100,
+                        partial_rep_counter: 0,
+                        analysis_data: {}
+                    };
+                    localStorage.setItem('sts-results', JSON.stringify(stsResults));
                 }
-                // // Store response after successful API call
+
+                // reps, full_rep_counter, partial_rep_counter, analysis_data
+                const stsWrapper = new STSWrapper("DH-Tech-API-Test", "https://dan-dh-api-eu-uat.hive.digital4danone.com");
+                const res = await stsWrapper.submitTestResults(profileData, malnutritionForm, stsResults);
+
                 localStorage.setItem('sts-api-response', JSON.stringify(res));
                 console.log("API call successful, response stored.");
 

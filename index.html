@@ -165,6 +165,25 @@
     maxDate: eighteenYearsAgo
   });
 
+  // ===== Age Calculation Function =====
+  function getAgeFromDob(dob) {
+    // Parse DD/MM/YYYY format
+    let birthDate;
+    if (typeof dob === 'string' && dob.includes('/')) {
+      const [day, month, year] = dob.split('/').map(Number);
+      birthDate = new Date(year, month - 1, day);
+    } else {
+      birthDate = new Date(dob);
+    }
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  }
+
   // ===== Form Validation and Submission =====
   const form = document.getElementById('profileForm');
   const submitBtn = form.querySelector('button[type="submit"]');
@@ -180,7 +199,11 @@
     const data = {};
 
     for (const [key, value] of formData.entries()) {
-      if (key === 'consent') {
+      if (key === 'dob') {
+        // Convert DOB to age and store only age
+        data['age'] = getAgeFromDob(value);
+        // Don't store the actual date of birth
+      } else if (key === 'consent') {
         data[key] = form.querySelector('[name="consent"]').checked;
       } else if (key === 'weight' || key === 'height') {
         data[key] = parseInt(value, 10);
