@@ -355,6 +355,8 @@
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
                 alert('There was an error processing your data. Please try again later.');
+                console.error("Error description:", error.description);
+                console.error("Error details:", error.details);
             }
         }
 

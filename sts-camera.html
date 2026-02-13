@@ -33,6 +33,7 @@
                 await camera.startCamera();
             } catch (error) {
                 alert(error);
+                console.error(error.description);
             }
         });
         window.addEventListener("sts-results", (event) => {
