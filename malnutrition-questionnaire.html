@@ -173,7 +173,7 @@
                     <label for="diseases" class="form-label">
                         Do you have any diagnosed diseases or chronic conditions?
                     </label>
-                    <select class="form-select" id="diseases" name="diseases">
+                    <select class="form-select" id="diseases" name="medical_conditions">
                         <option value="" selected disabled>Select an option</option>
                         <option value="none">No existing conditions</option>
                         <option value="cancer">Cancer</option>
@@ -194,7 +194,7 @@
                     <label for="changes" class="form-label">
                         Have you experienced any of the following changes recently?
                     </label>
-                    <select class="form-select" id="changes" name="changes">
+                    <select class="form-select" id="changes" name="recent_medical_history">
                         <option value="" selected disabled>Select an option</option>
                         <option value="none">No recent medical history</option>
                         <option value="hospitalization">Hospitalization</option>
@@ -211,7 +211,7 @@
                     <label for="danoneProducts" class="form-label">
                         Do you currently use any Danone medical nutrition products?
                     </label>
-                    <select class="form-select" id="danoneProducts" name="danone_products">
+                    <select class="form-select" id="danoneProducts" name="product_in_use">
                         <option value="" selected disabled>Select an option</option>
                         <option value="aptamil">Aptamil</option>
                         <option value="souvenaid">Souvenaid</option>
@@ -319,11 +319,11 @@
                     data[key] = value;
                 }
 
-                localStorage.setItem('malnutrition-form', JSON.stringify(data));
+                localStorage.setItem('malnutrition-response', JSON.stringify(data));
                 // Call API and store response in localStorage
                 const profileData = JSON.parse(localStorage.getItem('profile-data'));
                 // age, gender, height_cm, weight_kg, consent
-                const malnutritionForm = JSON.parse(localStorage.getItem('malnutrition-form'));
+                const malnutritionResponse = JSON.parse(localStorage.getItem('malnutrition-response'));
                 // malnutrition_weight_loss, malnutrition_poor_appetite, diseases, changes, danone_products, product_frequency
 
                 let stsResults = JSON.parse(localStorage.getItem('sts-results'));
@@ -340,7 +340,7 @@
 
                 // reps, full_rep_counter, partial_rep_counter, analysis_data
                 const stsWrapper = new STSWrapper("DH-Tech-API-Test", "https://dan-dh-api-apac-uat.hive.digital4danone.com");
-                const res = await stsWrapper.submitTestResults(profileData, malnutritionForm, stsResults);
+                const res = await stsWrapper.submitTestResults(profileData, malnutritionResponse, stsResults);
 
                 localStorage.setItem('sts-api-response', JSON.stringify(res));
                 console.log("API call successful, response stored.");
