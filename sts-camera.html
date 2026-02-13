@@ -36,8 +36,8 @@
                 console.error(error.description);
             }
         });
-        window.addEventListener("sts-results", (event) => {
-            localStorage.setItem("sts-results", JSON.stringify(event.detail));
+        window.addEventListener("sts-fe-results", (event) => {
+            localStorage.setItem("sts-fe-results", JSON.stringify(event.detail));
             window.location.href = "malnutrition-questionnaire.html";
         });
     </script>

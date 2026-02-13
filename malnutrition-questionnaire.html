@@ -326,7 +326,7 @@
                 const malnutritionResponse = JSON.parse(localStorage.getItem('malnutrition-response'));
                 // malnutrition_weight_loss, malnutrition_poor_appetite, diseases, changes, danone_products, product_frequency
 
-                let stsResults = JSON.parse(localStorage.getItem('sts-results'));
+                let stsResults = JSON.parse(localStorage.getItem('sts-fe-results'));
                 console.log("STS Results from localStorage:", stsResults);
                 if (!stsResults) {
                     stsResults = {
@@ -335,7 +335,7 @@
                         partial_rep_counter: 0,
                         analysis_data: {}
                     };
-                    localStorage.setItem('sts-results', JSON.stringify(stsResults));
+                    localStorage.setItem('sts-fe-results', JSON.stringify(stsResults));
                 }
 
                 // reps, full_rep_counter, partial_rep_counter, analysis_data
