@@ -125,14 +125,14 @@
         <!-- Weight -->
         <div class="mb-3">
           <label for="weight" class="form-label fw-semibold">Weight (kg)</label>
-          <input type="number" class="form-control form-control-md" id="weight" name="weight"
+          <input type="number" class="form-control form-control-md" id="weight" name="weight_kg"
             placeholder="Enter your weight" required>
         </div>
 
         <!-- Height -->
         <div class="mb-4">
           <label for="height" class="form-label fw-semibold">Height (cm)</label>
-          <input type="number" class="form-control form-control-md" id="height" name="height"
+          <input type="number" class="form-control form-control-md" id="height" name="height_cm"
             placeholder="Enter your height" required>
         </div>
 
@@ -205,7 +205,7 @@
         // Don't store the actual date of birth
       } else if (key === 'consent') {
         data[key] = form.querySelector('[name="consent"]').checked;
-      } else if (key === 'weight' || key === 'height') {
+      } else if (key === 'weight_kg' || key === 'height_cm') {
         data[key] = parseInt(value, 10);
       } else {
         data[key] = value;
