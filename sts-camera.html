@@ -21,12 +21,33 @@
             height: 100%;
             overflow: hidden;
         }
+
+        .dev-skip-btn {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            opacity: 0;
+            z-index: 9999;
+        }
     </style>
 </head>
 
 <body>
+    <button id="devSkipBtn" type="button" class="dev-skip-btn" aria-label="Skip"></button>
     <sts-camera></sts-camera>
     <script>
+        // Dev skip button functionality - sets dummy results and navigates to the questionnaire page for testing/demo purposes
+        document.getElementById('devSkipBtn').addEventListener('click', function () {
+            localStorage.setItem('sts-fe-results', JSON.stringify({
+                reps: 100,
+                full_rep_counter: 100,
+                partial_rep_counter: 0,
+            }));
+            window.location.href = 'malnutrition-questionnaire.html';
+        });
+
         document.addEventListener("DOMContentLoaded", async () => {
             const camera = document.querySelector("sts-camera");
             try {

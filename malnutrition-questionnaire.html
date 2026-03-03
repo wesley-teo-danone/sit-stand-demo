@@ -327,16 +327,6 @@
                 // malnutrition_weight_loss, malnutrition_poor_appetite, diseases, changes, danone_products, product_frequency
 
                 let stsResults = JSON.parse(localStorage.getItem('sts-fe-results'));
-                console.log("STS Results from localStorage:", stsResults);
-                if (!stsResults) {
-                    stsResults = {
-                        reps: 100,
-                        full_rep_counter: 100,
-                        partial_rep_counter: 0,
-                        analysis_data: {}
-                    };
-                    localStorage.setItem('sts-fe-results', JSON.stringify(stsResults));
-                }
 
                 // reps, full_rep_counter, partial_rep_counter, analysis_data
                 const stsWrapper = new STSWrapper("DH-Tech-API-Test", "apac", "uat");
